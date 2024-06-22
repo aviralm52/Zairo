@@ -147,12 +147,11 @@ const PageAddListing3: FC<PageAddListing3Props> = () => {
             // value={inputValues[index].name}
             // value={inputBoxvalue}
             value={inputBoxValueState[index]?.name}
-            defaultValue={
-              localStorage.getItem("formInputValues")
-                ? JSON.parse(localStorage.getItem("formInputValues")!)[index]
-                    .name
-                : ""
-            }
+            // defaultValue={
+            //   localStorage.getItem("formInputValues")
+            //     ? JSON.parse(localStorage.getItem("formInputValues")!)[index].name
+            //     : ""
+            // }
             onKeyDown={(e) => handleInputBoxChange(index, "name", e)}
           />
           <div className="flex items-center justify-around mb-4">
@@ -163,12 +162,12 @@ const PageAddListing3: FC<PageAddListing3Props> = () => {
               type="text"
               className="bg-transparent rounded-2xl w-2/5 text-center"
               value={inputValues[index].size}
-              defaultValue={
-                localStorage.getItem("formInputValues")
-                  ? JSON.parse(localStorage.getItem("formInputValues")!)[index]
-                      .size
-                  : ""
-              }
+              // defaultValue={
+              //   localStorage.getItem("formInputValues")
+              //     ? JSON.parse(localStorage.getItem("formInputValues")!)[index]
+              //         .size
+              //     : ""
+              // }
               onKeyDown={(e) => handleInputBoxChange(index, "size", e)}
             />
           </div>
@@ -179,12 +178,12 @@ const PageAddListing3: FC<PageAddListing3Props> = () => {
               label="Guests"
               // defaultValue={4}
               // defaultValue={inputValues[index].guests}
-              defaultValue={
-                localStorage.getItem("formInputValues")
-                  ? JSON.parse(localStorage.getItem("formInputValues")!)[index]
-                      .guests
-                  : 4
-              }
+              // defaultValue={
+              //   localStorage.getItem("formInputValues")
+              //     ? JSON.parse(localStorage.getItem("formInputValues")!)[index]
+              //         .guests
+              //     : 4
+              // }
               // ref={guestRef}
               onChange={(value) => handleChange(index, "guests", value)}
             />
@@ -192,48 +191,48 @@ const PageAddListing3: FC<PageAddListing3Props> = () => {
               label="Bedroom"
               // defaultValue={4}
               // defaultValue={inputValues[index].bedroom}
-              defaultValue={
-                localStorage.getItem("formInputValues")
-                  ? JSON.parse(localStorage.getItem("formInputValues")!)[index]
-                      .bedroom
-                  : 4
-              }
+              // defaultValue={
+              //   localStorage.getItem("formInputValues")
+              //     ? JSON.parse(localStorage.getItem("formInputValues")!)[index]
+              //         .bedroom
+              //     : 4
+              // }
               onChange={(value) => handleChange(index, "bedroom", value)}
             />
             <NcInputNumber
               label="Beds"
               // defaultValue={4}
               // defaultValue={inputValues[index].beds}
-              defaultValue={
-                localStorage.getItem("formInputValues")
-                  ? JSON.parse(localStorage.getItem("formInputValues")!)[index]
-                      .beds
-                  : 4
-              }
+              // defaultValue={
+              //   localStorage.getItem("formInputValues")
+              //     ? JSON.parse(localStorage.getItem("formInputValues")!)[index]
+              //         .beds
+              //     : 4
+              // }
               onChange={(value) => handleChange(index, "beds", value)}
             />
             <NcInputNumber
               label="Bathroom"
               // defaultValue={2}
               // defaultValue={inputValues[index].bathroom}
-              defaultValue={
-                localStorage.getItem("formInputValues")
-                  ? JSON.parse(localStorage.getItem("formInputValues")!)[index]
-                      .bathroom
-                  : 2
-              }
+              // defaultValue={
+              //   localStorage.getItem("formInputValues")
+              //     ? JSON.parse(localStorage.getItem("formInputValues")!)[index]
+              //         .bathroom
+              //     : 2
+              // }
               onChange={(value) => handleChange(index, "bathroom", value)}
             />
             <NcInputNumber
               label="Kitchen"
               // defaultValue={2}
               // defaultValue={inputValues[index].kitchen}
-              defaultValue={
-                localStorage.getItem("formInputValues")
-                  ? JSON.parse(localStorage.getItem("formInputValues")!)[index]
-                      .kitchen
-                  : 2
-              }
+              // defaultValue={
+              //   localStorage.getItem("formInputValues")
+              //     ? JSON.parse(localStorage.getItem("formInputValues")!)[index]
+              //         .kitchen
+              //     : 2
+              // }
               onChange={(value) => handleChange(index, "kitchen", value)}
             />
           </div>

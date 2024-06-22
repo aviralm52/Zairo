@@ -3,7 +3,7 @@
 import DatePickerCustomDay from "@/components/DatePickerCustomDay";
 import DatePickerCustomHeaderTwoMonth from "@/components/DatePickerCustomHeaderTwoMonth";
 import NcInputNumber from "@/components/NcInputNumber";
-import React, { FC, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 import DatePicker from "react-datepicker";
 
 export interface PageAddListing9Props {}
@@ -14,6 +14,16 @@ const PageAddListing9: FC<PageAddListing9Props> = () => {
     new Date("2023/02/09").getTime(),
     new Date("2023/02/15").getTime(),
   ]);
+
+  let Partitions = 0;
+  const [myArray, setMyArray] = useState<number[]>([]);
+  useEffect(() => {
+    Partitions = localStorage.getItem("numberOfPartition")
+      ? parseInt(localStorage.getItem("numberOfPartition")!)
+      : 0;
+    const newArray = Array(Partitions).fill(1);
+    setMyArray(newArray);
+  });
 
   return (
     <>
@@ -41,33 +51,40 @@ const PageAddListing9: FC<PageAddListing9Props> = () => {
         </span>
       </div>
 
-      <div className="addListingDatePickerExclude">
-        <DatePicker
-          onChange={(date) => {
-            let newDates = [];
+      {myArray.map((item, index) => (
+        <div className="border border-white rounded-xl p-2">
+          <span className="text-2xl ml-4 font-medium">Partition {index + 1}</span>
+          <div className="addListingDatePickerExclude mt-2" key={index}>
+            <DatePicker
+              onChange={(date) => {
+                let newDates = [];
 
-            if (!date) {
-              return;
-            }
-            const newTime = date.getTime();
-            if (dates.includes(newTime)) {
-              newDates = dates.filter((item) => item !== newTime);
-            } else {
-              newDates = [...dates, newTime];
-            }
-            setDates(newDates);
-          }}
-          // selected={startDate}
-          monthsShown={2}
-          showPopperArrow={false}
-          excludeDates={dates.filter(Boolean).map((item) => new Date(item))}
-          inline
-          renderCustomHeader={(p) => <DatePickerCustomHeaderTwoMonth {...p} />}
-          renderDayContents={(day, date) => (
-            <DatePickerCustomDay dayOfMonth={day} date={date} />
-          )}
-        />
-      </div>
+                if (!date) {
+                  return;
+                }
+                const newTime = date.getTime();
+                if (dates.includes(newTime)) {
+                  newDates = dates.filter((item) => item !== newTime);
+                } else {
+                  newDates = [...dates, newTime];
+                }
+                setDates(newDates);
+              }}
+              // selected={startDate}
+              monthsShown={2}
+              showPopperArrow={false}
+              excludeDates={dates.filter(Boolean).map((item) => new Date(item))}
+              inline
+              renderCustomHeader={(p) => (
+                <DatePickerCustomHeaderTwoMonth {...p} />
+              )}
+              renderDayContents={(day, date) => (
+                <DatePickerCustomDay dayOfMonth={day} date={date} />
+              )}
+            />
+          </div>
+        </div>
+      ))}
     </>
   );
 };

@@ -25,7 +25,7 @@ const PageAddListing6: FC<PageAddListing6Props> = () => {
         <div key={index}>
           <div>
             <h2 className="text-2xl font-semibold">
-              Your place description for '{localStorage.getItem('formInputValues') ? JSON.parse(localStorage.getItem('formInputValues')!)[index].name : ""} '
+              {/* Your place description for '{localStorage.getItem('formInputValues') ? JSON.parse(localStorage.getItem('formInputValues')!)[index].name : ""} ' */}
             </h2>
             <span className="block mt-2 text-neutral-500 dark:text-neutral-400">
               Mention the best features of your accommodation, any special

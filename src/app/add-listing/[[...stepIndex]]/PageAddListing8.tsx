@@ -10,6 +10,7 @@ export interface PageAddListing8Props {}
 const PageAddListing8: FC<PageAddListing8Props> = () => {
   let PartitionValueinPage8 = 0;
   const [myArray, setMyArray] = useState<number[]>([]);
+  const [isPortion, setIsPortion] = useState<Boolean>(false);
 
   useEffect(() => {
     const storedValue = localStorage.getItem("numberOfPartition");
@@ -18,6 +19,9 @@ const PageAddListing8: FC<PageAddListing8Props> = () => {
       const newArray = Array(PartitionValueinPage8).fill(1);
       setMyArray(newArray);
     }
+    if (PartitionValueinPage8 > 1) {
+      setIsPortion(true);
+    }
   }, []);
 
   return (
@@ -25,7 +29,7 @@ const PageAddListing8: FC<PageAddListing8Props> = () => {
       {myArray.map((item, index) => (
         <div>
           <div>
-            <h2 className="text-2xl font-semibold">Price your space</h2>
+            <h2 className="text-2xl font-semibold"><span className="text-6xl">P</span>rice for {isPortion ? `Portion ${index + 1}` : "Property"}</h2>
             <span className="block mt-2 text-neutral-500 dark:text-neutral-400">
               {` The host's revenue is directly dependent on the setting of rates and
                           regulations on the number of guests, the number of nights, and the
