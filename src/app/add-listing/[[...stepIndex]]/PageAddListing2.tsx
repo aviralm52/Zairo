@@ -4,7 +4,7 @@ import { MapPinIcon } from "@heroicons/react/24/solid";
 import LocationMarker from "@/components/AnyReactComponent/LocationMarker";
 import Label from "@/components/Label";
 import GoogleMapReact from "google-map-react";
-import React, { FC } from "react";
+import React, { FC, useEffect, useState } from "react";
 import ButtonSecondary from "@/shared/ButtonSecondary";
 import Input from "@/shared/Input";
 import Select from "@/shared/Select";
@@ -12,7 +12,96 @@ import FormItem from "../FormItem";
 
 export interface PageAddListing2Props {}
 
+interface Page2State {
+  country: string;
+  street: string;
+  roomNumber: string;
+  city: string;
+  state: string;
+  postalCode: string;
+}
+
 const PageAddListing2: FC<PageAddListing2Props> = () => {
+
+  const [country, setCountry] = useState<string>(() => {
+    const savedPage = localStorage.getItem("page2") || "";
+    if (!savedPage) {
+      return "Viet Nam";
+    }
+    const value = JSON.parse(savedPage)["country"];
+    return value || "Viet Nam";
+  });
+
+  const [street, setStreet] = useState<string>(() => {
+    const savedPage = localStorage.getItem("page2") || "";
+    if (!savedPage) {
+      return "";
+    }
+    const value = JSON.parse(savedPage)["street"];
+    return value || "";
+  });
+
+  const [roomNumber, setRoomNumber] = useState<string>(() => {
+    const savedPage = localStorage.getItem("page2") || "";
+    if (!savedPage) {
+      return "";
+    }
+    const value = JSON.parse(savedPage)["roomNumber"];
+    return value || "";
+  });
+
+  const [city, setCity] = useState<string>(() => {
+    const savedPage = localStorage.getItem("page2") || "";
+    if (!savedPage) {
+      return "";
+    }
+    const value = JSON.parse(savedPage)["city"];
+    return value || "";
+  });
+
+  const [state, setState] = useState<string>(() => {
+    const savedPage = localStorage.getItem("page2") || "";
+    if (!savedPage) {
+      return "";
+    }
+    const value = JSON.parse(savedPage)["state"];
+    return value || "";
+  });
+
+  const [postalCode, setPostalCode] = useState<string>(() => {
+    const savedPage = localStorage.getItem("page2") || "";
+    if (!savedPage) {
+      return "";
+    }
+    const value = JSON.parse(savedPage)["postalCode"];
+    return value || "";
+  });
+  
+
+  const [page2, setPage2] = useState<Page2State>({
+    country: country,
+    street: street,
+    roomNumber: roomNumber,
+    city: city,
+    state: state,
+    postalCode: postalCode,
+  });
+
+
+  useEffect(() => {
+    const newPage2: Page2State = {
+      country: country,
+      street: street,
+      roomNumber: roomNumber,
+      city: city,
+      state: state,
+      postalCode: postalCode,
+    }
+    setPage2(newPage2);
+    localStorage.setItem("page2", JSON.stringify(newPage2));
+  }, [country, street, roomNumber, city, state, postalCode]);
+
+
   return (
     <>
       <h2 className="text-2xl font-semibold">Your place location</h2>
@@ -25,31 +114,30 @@ const PageAddListing2: FC<PageAddListing2Props> = () => {
         </ButtonSecondary>
         {/* ITEM */}
         <FormItem label="Country/Region">
-          <Select>
+          <Select onChange={(e) => setCountry(e.target.value)} value={country}>
             <option value="Viet Nam">Viet Nam</option>
             <option value="Thailand">Thailand</option>
             <option value="France">France</option>
             <option value="Singapore">Singapore</option>
             <option value="Jappan">Jappan</option>
             <option value="Korea">Korea</option>
-            <option value="...">...</option>
           </Select>
         </FormItem>
         <FormItem label="Street">
-          <Input placeholder="..." />
+          <Input placeholder="..." value={street} onChange={(e) => setStreet(e.target.value)}/>
         </FormItem>
         <FormItem label="Room number (optional)">
-          <Input />
+          <Input value={roomNumber} onChange={(e) => setRoomNumber(e.target.value)}/>
         </FormItem>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-5">
           <FormItem label="City">
-            <Input />
+            <Input value={city} onChange={(e) => setCity(e.target.value)}/>
           </FormItem>
           <FormItem label="State">
-            <Input />
+            <Input value={state} onChange={(e) => setState(e.target.value)}/>
           </FormItem>
           <FormItem label="Postal code">
-            <Input />
+            <Input value={postalCode} onChange={(e) => setPostalCode(e.target.value)}/>
           </FormItem>
         </div>
         <div>

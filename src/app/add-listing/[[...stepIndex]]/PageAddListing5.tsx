@@ -1,10 +1,50 @@
-import React, { FC } from "react";
+"use client";
+import React, { FC, useState } from "react";
 import ButtonPrimary from "@/shared/ButtonPrimary";
 import Input from "@/shared/Input";
 
 export interface PageAddListing5Props {}
 
 const PageAddListing5: FC<PageAddListing5Props> = () => {
+
+
+  const [generalAmenities, setGeneralAmenities] = useState<string[]>(() => {
+    const savedPage = localStorage.getItem("page4") || "";
+    if (!savedPage) {
+      return [];
+    }
+    const value = JSON.parse(savedPage)["generalAmenities"];
+    return value || []; 
+  });
+
+  const [pet, setPet] = useState<string[]>(() => {
+    const savedPage = localStorage.getItem("page4") || "";
+    if (!savedPage) {
+      return [];
+    }
+    const value = JSON.parse(savedPage)["pet"];
+    return value || []; 
+  });
+
+  const [party, setParty] = useState<string[]>(() => {
+    const savedPage = localStorage.getItem("page4") || "";
+    if (!savedPage) {
+      return [];
+    }
+    const value = JSON.parse(savedPage)["party"];
+    return value || []; 
+  });
+
+  const [cooking, setCooking] = useState<string[]>(() => {
+    const savedPage = localStorage.getItem("page4") || "";
+    if (!savedPage) {
+      return [];
+    }
+    const value = JSON.parse(savedPage)["cooking"];
+    return value || []; 
+  });
+
+
   const renderRadio = (
     name: string,
     id: string,
@@ -57,7 +97,7 @@ const PageAddListing5: FC<PageAddListing5Props> = () => {
         {/* ITEM */}
         <div>
           <label className="text-lg font-semibold" htmlFor="">
-            General amenities
+            Smoking
           </label>
           <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {renderRadio("Smoking", "Do", "Do not allow")}

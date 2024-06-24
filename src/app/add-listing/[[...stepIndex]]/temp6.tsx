@@ -4,33 +4,43 @@ import React, { FC } from "react";
 import ImageUpload from "./uploadImage";
 import axios from "axios";
 import { MdCancel } from "react-icons/md";
-import { Value } from "sass";
 
 export interface PageAddListing7Props {}
 
 const PageAddListing7: FC<PageAddListing7Props> = () => {
-
-  let portions = 0;
+  let PartitionValueinPage7 = 0;
   const [myArray, setMyArray] = useState<number[]>([]);
 
   useEffect(() => {
-    const storedValue = localStorage.getItem("page1") || "";
-    const data = JSON.parse(storedValue);
-    const value = data["numberOfPortions"];
-
-    if (value) {
-      portions = parseInt(value);
-      if (portions > 1) {
-        const newArray = Array(portions).fill(1);
+    const storedValue = localStorage.getItem("numberOfPartition");
+    if (storedValue) {
+      PartitionValueinPage7 = parseInt(storedValue);
+      if (PartitionValueinPage7 > 1) {
+        const newArray = Array(PartitionValueinPage7).fill(1);
         setMyArray(newArray);
       }
     }
   }, []);
 
+  const storedValue = localStorage.getItem("numberOfPartition");
+  if (storedValue) {
+    PartitionValueinPage7 = parseInt(storedValue);
+  }
   const booleanArray = Array.from(
-    { length: portions },
+    { length: PartitionValueinPage7 },
     () => false
   );
+  // const emptyStringArray = Array.from(
+  //   { length: PartitionValueinPage7 },
+  //   () => ""
+  // );
+  // const booleanArrayGenerator = (size: number) => {
+  //   const booleanArray = Array.from(
+  //     { length: size },
+  //     () => false
+  //   );
+  //   return booleanArray;
+  // }
   const emptyStringArrayGenerator = (size: number) => {
     const emptyStringArray = Array.from({ length: size }, () => "");
     return emptyStringArray;
@@ -38,138 +48,37 @@ const PageAddListing7: FC<PageAddListing7Props> = () => {
 
   // TODO: States for property and portion images
   const [portionCoverFileUrls, setPortionCoverFileUrls] = useState<string[]>(
-    () => {
-      const savedUrls = localStorage.getItem("portionCoverFileUrls");
-      return savedUrls
-        ? JSON.parse(savedUrls)
-        : emptyStringArrayGenerator(portions);
-    }
+    emptyStringArrayGenerator(PartitionValueinPage7)
+  );
+  const [propertyCoverFileUrl, setPropertyCoverFileUrl] = useState<string>("");
+  const [portionPictureUrls, setPortionPictureUrls] = useState<string[][]>([]);
+  const [PropertyPictureUrls, setPropertyPictureUrls] = useState<string[]>(
+    emptyStringArrayGenerator(5)
   );
 
-  const [propertyCoverFileUrl, setPropertyCoverFileUrl] = useState<string>(
-    () => {
-      const savedUrls = localStorage.getItem("propertyCoverFileUrl");
-      return savedUrls ? savedUrls : "";
-    }
-  );
-
-  // const [portionPictureUrls, setPortionPictureUrls] = useState<string[][]>(
-  //   () => {
-  //     const savedUrls = localStorage.getItem("portionPictureUrls");
-  //     return savedUrls
-  //       ? JSON.parse(savedUrls)
-  //       : Array.from({ length: portions }, () =>
-  //           Array(5).fill("*")
-  //         );
-  //   }
-  // );
-
-  const [portionPictureUrls, setPortionPictureUrls] = useState<string[][]>(
-    () => {
-      const savedUrls = localStorage.getItem("portionPictureUrls") || "";
-      const empty = emptyStringArrayGenerator(5);
-      console.log("portion: ", portions)
-      const arr = Array(portions).fill(empty);
-      console.log("arr:", arr)
-      // return savedUrls
-      //   ? JSON.parse(savedUrls)
-      //   : Array(portions).fill(emptyStringArrayGenerator(5));
-      // if (savedUrls.length > 0) {
-      //   console.log("saved: ", savedUrls, savedUrls.length, savedUrls[0]);
-      //   return JSON.parse(savedUrls);
-      // }
-      // console.log(arr);
-      return arr;
-    }
-  );
-
-  useEffect(() => {
-    console.log("portionPictureUrls: ", portionPictureUrls);
-  }, [portionPictureUrls]);
-
-  const [isPortionPictures, setIsPortionPictures] = useState<boolean[]>(() => {
-    const savedFlags = localStorage.getItem("isPortionPictures");
-    return savedFlags
-      ? JSON.parse(savedFlags)
-      : Array(portions).fill(false);
-  });
-
-  const [propertyPictureUrls, setPropertyPictureUrls] = useState<string[]>(
-    () => {
-      const savedUrls = localStorage.getItem("propertyPictureUrls");
-      return savedUrls ? JSON.parse(savedUrls) : Array(5).fill("");
-    }
-  );
-
-  const [isPropertyPictures, setIsPropertyPictures] = useState<boolean>(() => {
-    const savedFlag = localStorage.getItem("isPropertyPictures");
-    return savedFlag ? JSON.parse(savedFlag) : false;
-  });
-
-  const [isImages, setIsImages] = useState<boolean[]>(() => {
-    const savedFlag = localStorage.getItem("isImages");
-    return savedFlag ? JSON.parse(savedFlag) : booleanArray;
-  });
-
+  const [isPropertyPictures, setIsPropertyPictures] = useState<boolean>(false);
+  const [isPortionPictures, setIsPortionPictures] =
+    useState<boolean[]>(booleanArray);
   //TODO: initialising portionCoverFileUrls of partitionSizeLength & each partion has 5 images
-  // const emptyArrayOf5 = emptyStringArrayGenerator(5);
-  // const newArray = Array.from(
-  //     { length: PartitionValueinPage7 },
-  //     () => emptyArrayOf5
-  // );
-
+  const emptyArrayOf5 = emptyStringArrayGenerator(5);
+  const newArray = Array.from(
+    { length: PartitionValueinPage7 },
+    () => emptyArrayOf5
+  );
   useEffect(() => {
-    localStorage.setItem("propertyCoverFileUrl", propertyCoverFileUrl);
-  }, [propertyCoverFileUrl]);
-
-  useEffect(() => {
-    localStorage.setItem(
-      "portionPictureUrls",
-      JSON.stringify(portionPictureUrls)
-    );
-  }, [portionPictureUrls]);
-
-  useEffect(() => {
-    localStorage.setItem(
-      "isPortionPictures",
-      JSON.stringify(isPortionPictures)
-    );
-  }, [isPortionPictures]);
-
-  useEffect(() => {
-    localStorage.setItem(
-      "propertyPictureUrls",
-      JSON.stringify(propertyPictureUrls)
-    );
-  }, [propertyPictureUrls]);
-
-  useEffect(() => {
-    localStorage.setItem(
-      "isPropertyPictures",
-      JSON.stringify(isPropertyPictures)
-    );
-  }, [isPropertyPictures]);
-
-  useEffect(() => {
-    localStorage.setItem(
-      "portionCoverFileUrls",
-      JSON.stringify(portionCoverFileUrls)
-    );
-  }, [portionCoverFileUrls]);
-
-  useEffect(() => {
-    localStorage.setItem("isImages", JSON.stringify(isImages));
-  }, [isImages]);
+    setPortionPictureUrls(newArray);
+  }, []);
+  // console.log("portionCoverFileUrls: ",portionCoverFileUrls)
 
   // TODO: File upload to cloudinary
-
+  const [isImages, setIsImages] = useState<boolean[]>(booleanArray);
   const preset_key = "CoverImage";
   const cloud_name = "dkfwmyr2k";
 
   const uploadFile = async (event: any, index: number) => {
-    // console.log("index: ", index);
+    console.log("index: ", index);
     const file = event?.target.files[0];
-    // console.log("files: ", event?.target.files);
+    console.log("files: ", event?.target.files);
 
     const folderPath = "/Cover_Image";
     const formData = new FormData();
@@ -183,11 +92,13 @@ const PageAddListing7: FC<PageAddListing7Props> = () => {
       formData
     );
     const customUrl = response.data.secure_url + `/index=${index}`;
+    console.log("url: ", response.data.secure_url, "\n", customUrl);
     setPortionCoverFileUrls((prevState) => {
       const newUrls = [...prevState];
       newUrls[index] = response?.data.secure_url;
       return newUrls;
     });
+    console.log("files: ", event?.target.files);
 
     // ! updating boolen array of images
     setIsImages((prevState) => {
@@ -195,6 +106,13 @@ const PageAddListing7: FC<PageAddListing7Props> = () => {
       newImages[index] = true;
       return newImages;
     });
+    console.log(
+      "url: ",
+      response.data.secure_url,
+      "\n",
+      customUrl,
+      portionCoverFileUrls
+    );
   };
 
   const uploadPropertyCoverFile = async (event: any) => {
@@ -215,14 +133,10 @@ const PageAddListing7: FC<PageAddListing7Props> = () => {
   };
 
   const uploadPortionPictures = async (event: any, index: number) => {
+    console.log("portion", index);
     const files = event?.target.files;
     const folderPath = "/Cover_Image";
     const formData = new FormData();
-
-    console.log("portion pictures: ", portionPictureUrls)
-    const updatedUrls = [...portionPictureUrls];
-    const newImages = [...isPortionPictures];
-
     for (let i = 0; i < 5; i++) {
       formData.append("file", files[i]);
       formData.append("upload_preset", preset_key);
@@ -232,22 +146,26 @@ const PageAddListing7: FC<PageAddListing7Props> = () => {
         `https://api.cloudinary.com/v1_1/${cloud_name}/image/upload`,
         formData
       );
+      setPortionPictureUrls((prevState) => {
+        const newUrls = [...prevState];
+        newUrls[index][i] = response.data.secure_url;
+        return newUrls;
+      });
 
-      updatedUrls[index] = [...updatedUrls[index]];
-      updatedUrls[index][i] = response.data.secure_url;
+      // ! updating boolen array of images
+      setIsPortionPictures((prevState) => {
+        const newImages = [...prevState];
+        newImages[index] = true;
+        return newImages;
+      });
+      console.log("portition pictures url: ", portionPictureUrls);
     }
-    newImages[index] = true;
-    setPortionPictureUrls(updatedUrls);
-    setIsPortionPictures(newImages);
   };
 
   const uploadPropertyPictures = async (event: any) => {
     const files = event?.target.files;
     const folderPath = "/Cover_Image";
     const formData = new FormData();
-
-    const savedUrls = [...propertyPictureUrls];
-
     for (let i = 0; i < 5; i++) {
       formData.append("file", files[i]);
       formData.append("upload_preset", preset_key);
@@ -258,13 +176,29 @@ const PageAddListing7: FC<PageAddListing7Props> = () => {
         formData
       );
 
-      savedUrls[i] = response.data.secure_url;
+      setPropertyPictureUrls((prevState) => {
+        const newUrls = [...prevState];
+        newUrls[i] = response.data.secure_url;
+        return newUrls;
+      });
     }
-
-    setPropertyPictureUrls(savedUrls);
     setIsPropertyPictures(true);
   };
 
+  // TODO: Handling click on cross of uploaded image
+  // const handleClickOnCross = (index: number) => {
+  //   setIsImages((prev) => [
+  //     ...prev.slice(0, index),
+  //     false,
+  //     ...prev.slice(index + 1, prev.length),
+  //   ])
+
+  //   setPortionCoverFileUrls((prev) => [
+  //     ...prev.slice(0, index),
+  //     "",
+  //     ...prev.slice(index + 1, prev.length),
+  //   ]);
+  // }
 
   return (
     <div className="flex flex-col gap-20">
@@ -335,9 +269,7 @@ const PageAddListing7: FC<PageAddListing7Props> = () => {
         </div>
         {/* ---------------- */}
         <div>
-          <span className="text-lg font-semibold">
-            Pictures of the placeisProper
-          </span>
+          <span className="text-lg font-semibold">Pictures of the place</span>
           <div className="mt-5 ">
             <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-neutral-300 dark:border-neutral-6000 border-dashed rounded-md">
               <div className="space-y-1 text-center">
@@ -358,20 +290,13 @@ const PageAddListing7: FC<PageAddListing7Props> = () => {
                   </svg>
                 ) : (
                   <div className="flex flex-col items-center">
-                    <MdCancel
-                      className=" text-center text-2xl cursor-pointer mb-2"
-                      onClick={() => {
-                        const emptyArray = emptyStringArrayGenerator(5);
-                        setPropertyPictureUrls(emptyArray);
-                        setIsPropertyPictures(false);
-                      }}
-                    />
+                    <MdCancel className=" text-center text-2xl cursor-pointer mb-2" />
                     <div className=" flex gap-2 w-full">
                       {Array.from({ length: 5 }, () => "").map((_, i) => (
                         <div className="flex flex-wrap gap-4 mx-2" key={i}>
                           {/* <MdCancel className=" text-right ml-auto text-xl cursor-pointer mt-12"/> */}
                           <img
-                            src={propertyPictureUrls[i]}
+                            src={PropertyPictureUrls[i]}
                             className="w-28 h-28 object-contain rounded-lg  border border-gray-500"
                           />
                         </div>
@@ -449,18 +374,13 @@ const PageAddListing7: FC<PageAddListing7Props> = () => {
                       <div>
                         <MdCancel
                           className=" text-right ml-auto text-xl cursor-pointer"
-                          onClick={() => {
+                          onClick={() =>
                             setIsImages((prev) => [
                               ...prev.slice(0, index),
                               false,
                               ...prev.slice(index + 1, prev.length),
-                            ]);
-                            setPortionCoverFileUrls((prev) => {
-                              const newCoverFileUrls = [...prev];
-                              newCoverFileUrls[index] = "";
-                              return newCoverFileUrls;
-                            });
-                          }}
+                            ])
+                          }
                           // onClick={handleClickOnCross}
                         />
                         <div className="flex flex-wrap gap-2">
@@ -520,24 +440,9 @@ const PageAddListing7: FC<PageAddListing7Props> = () => {
                         ></path>
                       </svg>
                     ) : (
-                      <div className="flex flex-col items-center">
-                        <MdCancel
-                          className=" text-center text-2xl cursor-pointer mb-2"
-                          onClick={() => {
-                            setPortionPictureUrls((prev) => {
-                              const newPortionPictureUrls = [...prev];
-                              newPortionPictureUrls[index] =
-                                emptyStringArrayGenerator(5);
-                              return newPortionPictureUrls;
-                            });
-                            setIsPortionPictures((prev) => {
-                              const newPortionArray = [...prev];
-                              newPortionArray[index] = false;
-                              return newPortionArray;
-                            });
-                          }}
-                        />
-                        <div className=" flex gap-2 w-full">
+                      <div className="flex flex-col">
+                        <MdCancel className=" text-center text-2xl cursor-pointer mt-12" />
+                        <div className="border border-white flex gap-2 w-full">
                           {Array.from({ length: 5 }, () => "").map((_, i) => (
                             <div className="flex flex-wrap gap-4 mx-2" key={i}>
                               {/* <MdCancel className=" text-right ml-auto text-xl cursor-pointer mt-12"/> */}

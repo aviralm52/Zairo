@@ -1,9 +1,11 @@
-import React, { FC } from "react";
+"use client";
+import React, { FC, useState } from "react";
 import Checkbox from "@/shared/Checkbox";
 
 export interface PageAddListing4Props {}
 
 const PageAddListing4: FC<PageAddListing4Props> = () => {
+
   return (
     <>
       <div>

@@ -6,31 +6,99 @@ import Select from "@/shared/Select";
 import FormItem from "../FormItem";
 import { PortionsContext } from "@/app/Store/portionStore";
 
-
 export interface PageAddListing1Props {}
 
+interface Page1State {
+  propertyType: string;
+  placeName: string;
+  rentalForm: string;
+  numberOfPortions: number;
+  showPortionsInput: boolean;
+}
+
 const PageAddListing1: FC<PageAddListing1Props> = () => {
-  const [showPortionsInput, setShowPortionsInput] = useState(false);
-  const [numberOfPortions, setNumberOfPortions] = useState(1);
 
-  useEffect(() => {
-    const storedValue = localStorage.setItem("numberOfPartition", '1');
-  }, []);
+  const [propertyType, setPropertyType] = useState<string>(() => {
+    const savedPage = localStorage.getItem("page1") || "";
+    if (!savedPage) {
+      return "Hotel";
+    }
+    const value = JSON.parse(savedPage)["propertyType"];
+    return value || "Hotel";
+  });
 
-  const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+  const [placeName, setPlaceName] = useState<string>(() => {
+    const savedPage = localStorage.getItem("page1") || "";
+    if (!savedPage) {
+      return "";
+    }
+    const value = JSON.parse(savedPage)["placeName"];
+    return value || "";
+  });
+
+  const [rentalForm, setRentalForm] = useState<string>(() => {
+    const savedPage = localStorage.getItem("page1") || "";
+    if (!savedPage) {
+      return "Private Room";
+    }
+    const value = JSON.parse(savedPage)["rentalForm"];
+    return value || "Private Room";
+  });
+
+  const [numberOfPortions, setNumberOfPortions] = useState<number>(() => {
+    const savedPage = localStorage.getItem("page1") || "";
+    if (!savedPage) {
+      return 1;
+    }
+    const value = JSON.parse(savedPage)["numberOfPortions"];
+    return value ? parseInt(value, 10) : 1;
+  });
+
+  const [showPortionsInput, setShowPortionsInput] = useState<boolean>(() => {
+    const savedPage = localStorage.getItem("page1") || "";
+    if (!savedPage) {
+      return false;
+    }
+    const value = JSON.parse(savedPage)["showPortionsInput"];
+    return value ? JSON.parse(value) : false;
+  });
+
+
+  const [page1, setPage1] = useState<Page1State>({
+    propertyType: propertyType,
+    placeName: placeName,
+    rentalForm: rentalForm,
+    numberOfPortions: numberOfPortions,
+    showPortionsInput: showPortionsInput,
+  });
+
+
+
+  const handlePropertyTypeChange = (
+    e: React.ChangeEvent<HTMLSelectElement>
+  ) => {
+    const selectedPropertyType = e.target.value;
+    setPropertyType(selectedPropertyType);
+  };
+
+  const handlePlaceName = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPlaceName(e.target.value);
+  };
+
+  const handleRentalFormChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedValue = e.target.value;
     const value = 1;
     if (selectedValue === "Private room") {
       setNumberOfPortions(value);
-      localStorage.setItem("numberOfPartition", value.toString());
     }
     // Example logic to handle when to show portions input
     if (selectedValue === "Private room by portion") {
-      console.log("private room by portion");
+      console.log('yuss')
       setShowPortionsInput(true);
     } else {
       setShowPortionsInput(false);
     }
+    setRentalForm(e.target.value);
   };
 
   const handlePortionsInputChange = (
@@ -38,8 +106,57 @@ const PageAddListing1: FC<PageAddListing1Props> = () => {
   ) => {
     const value = parseInt(e.target.value, 10); // Ensure input value is parsed to an integer
     setNumberOfPortions(value);
-    localStorage.setItem("numberOfPartition", value.toString());
   };
+
+  useEffect(() => {
+    // localStorage.setItem("numberOfPartition", numberOfPortions.toString());
+    setPage1((prev) => {
+      const newObj = { ...prev };
+      newObj.numberOfPortions = numberOfPortions;
+      return newObj;
+    });
+  }, [numberOfPortions]);
+
+  useEffect(() => {
+    setPage1((prev) => {
+      const newObj = { ...prev };
+      newObj.propertyType = propertyType;
+      return newObj;
+    });
+    // localStorage.setItem("propertyType", propertyType);
+  }, [propertyType]);
+
+  useEffect(() => {
+    // localStorage.setItem("placeName", placeName);
+    setPage1((prev) => {
+      const newObj = { ...prev };
+      newObj.placeName = placeName;
+      return newObj;
+    });
+  }, [placeName]);
+
+  useEffect(() => {
+    // localStorage.setItem("rentalForm", rentalForm);
+    setPage1((prev) => {
+      const newObj = { ...prev };
+      newObj.rentalForm = rentalForm;
+      return newObj;
+    });
+  }, [rentalForm]);
+
+
+  useEffect(() => {
+    const newPage1: Page1State = {
+      propertyType: propertyType,
+      placeName: placeName,
+      rentalForm: rentalForm,
+      numberOfPortions: numberOfPortions,
+      showPortionsInput: showPortionsInput,
+    };
+    setPage1(newPage1);
+    localStorage.setItem("page1", JSON.stringify(newPage1));
+  }, [propertyType, placeName, rentalForm, numberOfPortions, showPortionsInput]);
+
 
   return (
     <div>
@@ -52,7 +169,7 @@ const PageAddListing1: FC<PageAddListing1Props> = () => {
           label="Choose a property type"
           desc="Hotel: Professional hospitality businesses that usually have a unique style or theme defining their brand and decor"
         >
-          <Select>
+          <Select onChange={handlePropertyTypeChange} value={propertyType}>
             <option value="Hotel">Hotel</option>
             <option value="Cottage">Cottage</option>
             <option value="Villa">Villa</option>
@@ -66,13 +183,17 @@ const PageAddListing1: FC<PageAddListing1Props> = () => {
           label="Place name"
           desc="A catchy name usually includes: House name + Room name + Featured property + Tourist destination"
         >
-          <Input placeholder="Places name" />
+          <Input
+            placeholder="Places name"
+            onChange={handlePlaceName}
+            value={placeName}
+          />
         </FormItem>
         <FormItem
           label="Rental form"
           desc="Entire place: Guests have the whole place to themselves—there's a private entrance and no shared spaces. A bedroom, bathroom, and kitchen are usually included."
         >
-          <Select onChange={handleSelectChange}>
+          <Select onChange={handleRentalFormChange} value={rentalForm}>
             {/* <option value="Share room">Share room</option> */}
             <option value="Private room">Private room</option>
             <option value="Private room by portion">
