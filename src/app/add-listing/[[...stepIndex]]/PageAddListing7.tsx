@@ -11,21 +11,15 @@ export interface PageAddListing7Props {}
 const PageAddListing7: FC<PageAddListing7Props> = () => {
 
   let portions = 0;
-  const [myArray, setMyArray] = useState<number[]>([]);
-
-  useEffect(() => {
-    const storedValue = localStorage.getItem("page1") || "";
-    const data = JSON.parse(storedValue);
-    const value = data["numberOfPortions"];
-
+  const data = localStorage.getItem("page1") || "";
+  if (data) {
+    const value = JSON.parse(data)["numberOfPortions"];
     if (value) {
-      portions = parseInt(value);
-      if (portions > 1) {
-        const newArray = Array(portions).fill(1);
-        setMyArray(newArray);
-      }
+      portions = parseInt(value, 10);
     }
-  }, []);
+  }
+
+  const [myArray, setMyArray] = useState<number[]>(Array(portions).fill(1));
 
   const booleanArray = Array.from(
     { length: portions },
@@ -53,39 +47,17 @@ const PageAddListing7: FC<PageAddListing7Props> = () => {
     }
   );
 
-  // const [portionPictureUrls, setPortionPictureUrls] = useState<string[][]>(
-  //   () => {
-  //     const savedUrls = localStorage.getItem("portionPictureUrls");
-  //     return savedUrls
-  //       ? JSON.parse(savedUrls)
-  //       : Array.from({ length: portions }, () =>
-  //           Array(5).fill("*")
-  //         );
-  //   }
-  // );
-
   const [portionPictureUrls, setPortionPictureUrls] = useState<string[][]>(
     () => {
-      const savedUrls = localStorage.getItem("portionPictureUrls") || "";
-      const empty = emptyStringArrayGenerator(5);
-      console.log("portion: ", portions)
-      const arr = Array(portions).fill(empty);
-      console.log("arr:", arr)
-      // return savedUrls
-      //   ? JSON.parse(savedUrls)
-      //   : Array(portions).fill(emptyStringArrayGenerator(5));
-      // if (savedUrls.length > 0) {
-      //   console.log("saved: ", savedUrls, savedUrls.length, savedUrls[0]);
-      //   return JSON.parse(savedUrls);
-      // }
-      // console.log(arr);
-      return arr;
+      const savedUrls = localStorage.getItem("portionPictureUrls");
+      return savedUrls
+        ? JSON.parse(savedUrls)
+        : Array.from({ length: portions }, () =>
+            Array(5).fill("*")
+          );
     }
   );
 
-  useEffect(() => {
-    console.log("portionPictureUrls: ", portionPictureUrls);
-  }, [portionPictureUrls]);
 
   const [isPortionPictures, setIsPortionPictures] = useState<boolean[]>(() => {
     const savedFlags = localStorage.getItem("isPortionPictures");
@@ -405,7 +377,6 @@ const PageAddListing7: FC<PageAddListing7Props> = () => {
           </div>
         </div>
       </div>
-
       {myArray.map((item, index) => (
         <div key={index}>
           <div>
