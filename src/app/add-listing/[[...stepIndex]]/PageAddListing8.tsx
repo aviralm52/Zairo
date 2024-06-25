@@ -7,6 +7,14 @@ import FormItem from "../FormItem";
 
 export interface PageAddListing8Props {}
 
+interface Page8State {
+  currency: string;
+  isPortion: Boolean;
+  basePrice: number[];
+  weekendPrice: number[];
+  monthlyDiscount: number[];
+}
+
 const PageAddListing8: FC<PageAddListing8Props> = () => {
   let portions = 0;
   const data = localStorage.getItem("page1") || "";
@@ -59,6 +67,31 @@ const PageAddListing8: FC<PageAddListing8Props> = () => {
     const value = JSON.parse(savedPage)["monthlyDiscount"];
     return value || emptyNumberArrayGenerator(portions);
   });
+
+  const [page8, setPage8] = useState<Page8State>(() => {
+    const savedPage = localStorage.getItem("page8");
+    return savedPage
+      ? JSON.parse(savedPage)
+      : {
+          currency: "EURO",
+          isPortion: false,
+          basePrice: emptyNumberArrayGenerator(portions),
+          weekendPrice: emptyNumberArrayGenerator(portions),
+          monthlyDiscount: emptyNumberArrayGenerator(portions),
+        };
+  });
+
+  useEffect(() => {
+    const newPage = {
+      currency: currency,
+      isPortion: isPortion,
+      basePrice: basePrice,
+      weekendPrice: weekendPrice,
+      monthlyDiscount: monthlyDiscount,
+    };
+    setPage8(newPage);
+    localStorage.setItem("page8", JSON.stringify(newPage));
+  }, [isPortion, basePrice, weekendPrice, monthlyDiscount]);
 
   return (
     <div className=" flex flex-col gap-12">

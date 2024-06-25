@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import { FC } from "react";
 import ButtonPrimary from "@/shared/ButtonPrimary";
 import ButtonSecondary from "@/shared/ButtonSecondary";
@@ -22,6 +22,35 @@ const CommonLayout: FC<CommonLayoutProps> = ({ children, params }) => {
     index > 1 ? `/add-listing/${index - 1}` : `/add-listing/${1}`
   ) as Route;
   const nextBtnText = index > 9 ? "Publish listing" : "Continue";
+
+
+  useEffect(() => {
+    if (index === 9 && nextBtnText === "Publish listing") {
+      // Get data from local storage
+      const data = localStorage.getItem("yourStorageKey");
+      if (data) {
+        // Convert data to JSON format
+        const jsonData = JSON.parse(data);
+        
+        // Create a new Blob object containing the JSON data
+        const blob = new Blob([JSON.stringify(jsonData, null, 2)], { type: "application/json" });
+
+        // Create a link element to download the JSON file
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "yourData.json";
+        document.body.appendChild(a);
+        a.click();
+
+        // Clean up
+        URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+      }
+    }
+  }, [index, nextBtnText]);
+
+
   return (
     <>
       {/* <div

@@ -8,61 +8,14 @@ import DatePicker from "react-datepicker";
 
 export interface PageAddListing9Props {}
 
-interface ListingData {
-  id: string;
-  authorId: number;
-  date: string;
-  href: string;
-  listingCategoryId: number;
-  title: string;
-  featuredImage: string;
-  galleryImgs: string[];
-  commentCount: number;
-  viewCount: number;
-  like: boolean;
-  address: string;
-  reviewStart: number;
-  reviewCount: number;
-  price: string;
-  maxGuests: number;
-  bedrooms: number;
-  bathrooms: number;
-  saleOff: string | null;
-  isAds: string | null;
-  map: {
-    lat: number;
-    lng: number;
-  };
+interface publishPageState {
+  id: string,
+  saleOff: string,
+  isAds: string,
+  author: string,
+  listingCategory: string,
+  href: string
 }
-
-const initialListingData: ListingData = {
-  id: "id1",
-  authorId: 10,
-  date: "May 20, 2021",
-  href: "/listing-stay-detail",
-  listingCategoryId: 17,
-  title: "Best Western Cedars Hotel ",
-  featuredImage: "https://res.cloudinary.com/dkfwmyr2k/image/upload/v1719236707/Cover_Image/eogjs7s55ge7uzwjlrzk.jpg",
-  galleryImgs: [
-    "https://images.pexels.com/photos/1268871/pexels-photo-1268871.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500",
-    "https://images.pexels.com/photos/1179156/pexels-photo-1179156.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500",
-    "https://images.pexels.com/photos/2506988/pexels-photo-2506988.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500",
-    "https://images.pexels.com/photos/2373201/pexels-photo-2373201.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500"
-  ],
-  commentCount: 70,
-  viewCount: 602,
-  like: false,
-  address: "1 Anzinger Court",
-  reviewStart: 4.8,
-  reviewCount: 28,
-  price: "$26",
-  maxGuests: 6,
-  bedrooms: 10,
-  bathrooms: 3,
-  saleOff: "-10% today",
-  isAds: null,
-  map: { lat: 55.2094559, lng: 61.5594641 }
-};
 
 const PageAddListing9: FC<PageAddListing9Props> = () => {
   let portions = 0;
@@ -74,26 +27,15 @@ const PageAddListing9: FC<PageAddListing9Props> = () => {
     }
   }
 
-  //TODO: update listing data
-  const [listingData, setListingData] = useState<ListingData>(() => {
-    const savedData = localStorage.getItem("listingData");
-    return savedData ? JSON.parse(savedData) : initialListingData;
-  });
-
-  useEffect(() => {
-    localStorage.setItem("listingData", JSON.stringify(listingData));
-  }, [listingData]);
-
-   const updateListingData = (newData: Partial<ListingData>) => {
-    setListingData((prevData) => ({
-      ...prevData,
-      ...newData,
-    }));
-  };
-
-
   const [datesPerPortion, setDatesPerPortion] = useState<number[][]>(() => {
     const savedDates = localStorage.getItem("page9");
+    return savedDates
+      ? JSON.parse(savedDates)
+      : Array.from({ length: portions }, () => []);
+  });
+
+  const [blockedDates, setBlockedDates] = useState<number[][]>(() => {
+    const savedDates = localStorage.getItem("blockedDates") || "";
     return savedDates
       ? JSON.parse(savedDates)
       : Array.from({ length: portions }, () => []);
@@ -134,7 +76,32 @@ const PageAddListing9: FC<PageAddListing9Props> = () => {
     localStorage.setItem("page9", JSON.stringify(datesPerPortion));
   }, [datesPerPortion, night]);
 
-    console.trace()
+  const [publishPage, setPublishPage] = useState<publishPageState>(() => {
+    const savedPage = localStorage.getItem("publishPage");
+    const page8 = JSON.parse(localStorage.getItem("page8") || "");
+    return savedPage
+      ? JSON.parse(savedPage)
+      : {
+          id: "id101",
+          saleOff: `${page8.monthlyDiscount[0]}% today` || "-10% today",
+          isAds: "yes",
+          author: "username",
+          listingCategory: "category",
+          href: "route",
+        };
+  })
+
+  useEffect(() => {
+    const newPublicshPage : publishPageState = {
+      id: publishPage.id,
+      saleOff: publishPage.saleOff,
+      isAds: publishPage.isAds,
+      author: publishPage.author,
+      listingCategory: publishPage.listingCategory,
+      href: publishPage.href
+    }
+    localStorage.setItem("publishPage", JSON.stringify(newPublicshPage));
+  }, [publishPage]);
 
   return (
     <>

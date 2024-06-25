@@ -6,8 +6,6 @@ import ButtonPrimary from "@/shared/ButtonPrimary";
 import ButtonSecondary from "@/shared/ButtonSecondary";
 import { EyeIcon, PencilSquareIcon } from "@heroicons/react/24/outline";
 import { Route } from "@/routers/types";
-import { FaLocationDot } from "react-icons/fa6";
-import Link from "next/link";
 
 export interface PageAddListing10Props {}
 
@@ -39,15 +37,17 @@ interface ListingData {
 }
 
 interface publishPageState {
-  id: string;
-  saleOff: string;
-  isAds: string;
-  author: string;
-  listingCategory: string;
-  href: string;
+  id: string,
+  saleOff: string,
+  isAds: string,
+  author: string,
+  listingCategory: string,
+  href: string
 }
 
 const PageAddListing10: FC<PageAddListing10Props> = () => {
+
+  
   const [publishPage, setPublishPage] = useState<publishPageState>(() => {
     const savedPage = localStorage.getItem("publishPage");
     const page8 = JSON.parse(localStorage.getItem("page8") || "");
@@ -61,11 +61,11 @@ const PageAddListing10: FC<PageAddListing10Props> = () => {
           listingCategory: "category",
           href: "route",
         };
-  });
+  })
 
   const [listingPage, setListingPage] = useState<ListingData>(() => {
     const savedPage = localStorage.getItem("listingData");
-    return savedPage
+    return savedPage;
       ? JSON.parse(savedPage)
       : {
           ...DEMO_STAY_LISTINGS[0],
@@ -90,44 +90,19 @@ const PageAddListing10: FC<PageAddListing10Props> = () => {
           <StayCard
             className="mt-8"
             data={{ ...DEMO_STAY_LISTINGS[0], reviewStart: 0 }}
+            // data={{ ...publishPage, reviewStart: 0 }}
           />
         </div>
-
-        <div
-          className="card"
-          style={{
-            width: "18rem",
-            border: "1px solid gray",
-            borderRadius: "10px",
-            height: "20rem",
-          }}
-        >
-          <img
-            src={listingPage.featuredImage}
-            className="card-img-top h-60 w-96 rounded-xl"
-            alt="..."
-          />
-          <div className="card-body mt-2 ml-2">
-            <h1 className="mt-2">{listingPage.title}</h1>
-          </div>
-          <div className="flex gap-2 ml-2 mt-2">
-            <FaLocationDot />
-            <h6>{listingPage.address}</h6>
-          </div>
-        </div>
-
         <div className="flex items-center space-x-5 mt-8">
           <ButtonSecondary href={"/add-listing/1" as Route}>
             <PencilSquareIcon className="h-5 w-5" />
             <span className="ml-3">Edit</span>
           </ButtonSecondary>
 
-          <Link href={"/listing-stay-detail"}>
-            <ButtonPrimary>
-              <EyeIcon className="h-5 w-5" />
-              <span className="ml-3">Preview</span>
-            </ButtonPrimary>
-          </Link>
+          <ButtonPrimary>
+            <EyeIcon className="h-5 w-5" />
+            <span className="ml-3">Preview</span>
+          </ButtonPrimary>
         </div>
       </div>
       {/*  */}
@@ -135,4 +110,4 @@ const PageAddListing10: FC<PageAddListing10Props> = () => {
   );
 };
 
-export default PageAddListing10;
+export default PageAddListing10;  

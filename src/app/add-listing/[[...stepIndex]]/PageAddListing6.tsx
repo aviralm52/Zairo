@@ -12,6 +12,14 @@ interface Page6State {
 const PageAddListing6: FC<PageAddListing6Props> = () => {
   let portions = 0;
   const [myArray, setMyArray] = useState<number[]>([]);
+  const [portionNames, setPortionNames] = useState<string[]>(() => {
+    const savedPage = localStorage.getItem("page3") || "";
+    if (!savedPage) {
+      return [];
+    }
+    const value = JSON.parse(savedPage)["portionName"];
+    return value || [];
+  });
 
   useEffect(() => {
     const storedValue = localStorage.getItem("page1") || "";
@@ -55,7 +63,7 @@ const PageAddListing6: FC<PageAddListing6Props> = () => {
         <div key={index}>
           <div>
             <h2 className="text-2xl font-semibold">
-              Portion {index + 1}
+              {portionNames[index]}
             </h2>
             <span className="block mt-2 text-neutral-500 dark:text-neutral-400">
               Mention the best features of your accommodation, any special

@@ -1,223 +1,225 @@
 "use client";
-import { useEffect, useState } from "react";
-import React, { FC } from "react";
-import ImageUpload from "./uploadImage";
-import axios from "axios";
-import { MdCancel } from "react-icons/md";
+import React, { FC, useState } from "react";
+import Checkbox from "@/shared/Checkbox";
 
-export interface PageAddListing7Props {}
+export interface PageAddListing4Props {}
 
-const PageAddListing7: FC<PageAddListing7Props> = () => {
-  let PartitionValueinPage7 = 0;
-  const [myArray, setMyArray] = useState<number[]>([]);
+interface checkBoxState {
+  [key: string]: any;
+}
 
-  useEffect(() => {
-    const storedValue = localStorage.getItem("numberOfPartition");
-    if (storedValue) {
-      PartitionValueinPage7 = parseInt(storedValue);
-      const newArray = Array(PartitionValueinPage7).fill(1);
-      setMyArray(newArray);
-    }
-  }, []);
-
-  const storedValue = localStorage.getItem("numberOfPartition");
-  if (storedValue) {
-    PartitionValueinPage7 = parseInt(storedValue);
-  }
-  const booleanArray = Array.from(
-    { length: PartitionValueinPage7 },
-    () => false
-  );
-
-  // TODO: files array
-  const [files, setFiles] = useState<(File | null)[]>([]);
-  const [fileUrls, setFileUrls] = useState<string[]>([]);
-  const newArray = Array(PartitionValueinPage7).fill(null);
-  setFiles(newArray);
-
-  // TODO: File upload to cloudinary
-  const [imageUrl, setImageUrl] = useState("");
-  const [isImage, setIsImage] = useState(false);
-  const [isImages, setIsImages] = useState<boolean[]>(booleanArray);
-  const preset_key = "CoverImage";
-  const cloud_name = "dkfwmyr2k";
-
-  const uploadFile = async (event: any, index: number) => {
-    console.log("index: ", index);
-    const file = event?.target.files[0];
-
-    //! setting file in file array
-    setFiles((prevState) => {
-      const newFiles = [...prevState];
-      newFiles[index] = file;
-      return newFiles;
-    });
-    // console.log("files: ", event?.target.files);
-    const folderPath = "/Cover_Image";
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("upload_preset", preset_key);
-    formData.append("folder", folderPath);
-    const folder = "Zairo";
-
-    const response = await axios.post(
-      `https://api.cloudinary.com/v1_1/${cloud_name}/image/upload`,
-      formData
-    );
-    const customUrl = response.data.secure_url + `/index=${index}`;
-    // setFileUrls((prevState) => {
-    //   const newUrls = [...prevState];
-    //   newUrls[index] = customUrl;
-    //   return newUrls;
-    // });
-    setImageUrl(response.data.secure_url);
-    setIsImage(true);
-    // console.log("files: ", event?.target.files);
-
-    // ! updating boolen array of images
-    setIsImages((prevState) => {
-      const newImages = [...prevState];
-      newImages[index] = true;
-      return newImages;
-    });
+const PageAddListing4: FC<PageAddListing4Props> = () => {
+  const generalAmenities: checkBoxState = {
+    Wifi: true,
+    Internet: false,
+    TV: true,
+    "Air conditioning": false,
+    Fan: false,
+    "Private entrance": false,
+    Dryer: true,
+    Heater: false,
+    "Washing machine": false,
+    Detergent: true,
+    "Clothes dryer": false,
+    "Baby cot": false,
+    Desk: true,
+    Fridge: false,
   };
 
-  useEffect(() => {
-    console.log("isImages: ", isImages);
-  }, [isImages]);
+  const otherAmenities: checkBoxState = {
+    Wardrobe: true,
+    "Cloth hook": false,
+    "Extra cushion": true,
+    "Gas stove": false,
+    "Toilet paper": false,
+    "Free toiletries": true,
+    "Makeup table": false,
+    "Hot pot": false,
+    "Bathroom heaters": false,
+    Kettle: true,
+    Dishwasher: false,
+    "BBQ grill": true,
+    Toaster: true,
+    Towel: false,
+    "Dining table": false,
+  };
+
+  const safeAmenities: checkBoxState = {
+    "Fire Siren": true,
+    "Fire extinguisher": false,
+    "Antitheft Key": false,
+    "Safe Vault": false,
+  };
+
+  const [amenities, setAmenities] = useState<checkBoxState[]>([
+    generalAmenities,
+    otherAmenities,
+    safeAmenities,
+  ]);
+
+  const handleCheckboxChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const { name, checked } = event.target;
+    amenities[name]((prevState) => ({
+      ...prevState,
+      [name]: checked,
+    }));
+  };
 
   return (
-    <div className="flex flex-col gap-20">
-      {myArray.map((item, index) => (
-        <div key={index}>
-          <div>
-            <h2 className="text-2xl font-semibold">
-              <span>{index}</span>Pictures of the place
-            </h2>
-            <span className="block mt-2 text-neutral-500 dark:text-neutral-400">
-              A few beautiful photos will help customers have more sympathy for
-              your property.
-            </span>
-          </div>
-
-          <div className="w-14 border-b border-neutral-200 dark:border-neutral-700"></div>
-          {/* FORM */}
-          <div className="space-y-8">
-            <div>
-              <span className="text-lg font-semibold">Cover image</span>
-              <div>
-                <h1>Image Upload</h1>
-              </div>
-              <div className="mt-5 ">
-                <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-neutral-300 dark:border-neutral-6000 border-dashed rounded-md">
-                  <div className="space-y-1 text-center flex flex-col items-center">
-                    {!isImages[index] ? (
-                      <svg
-                        className="mx-auto h-12 w-12 text-neutral-400"
-                        stroke="currentColor"
-                        fill="none"
-                        viewBox="0 0 48 48"
-                        aria-hidden="true"
-                      >
-                        <path
-                          d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        ></path>
-                      </svg>
-                    ) : (
-                      <div>
-                        <MdCancel
-                          className=" text-right ml-auto text-xl cursor-pointer"
-                          onClick={() =>
-                            setIsImages((prev) => [
-                              ...prev.slice(0, index),
-                              false,
-                              ...prev.slice(index + 1, prev.length),
-                            ])
-                          }
+    <>
+      <div>
+        <h2 className="text-2xl font-semibold">Amenities </h2>
+        <span className="block mt-2 text-neutral-500 dark:text-neutral-400">
+          Many customers have searched for accommodation based on amenities
+          criteria
+        </span>
+      </div>
+      <div className="w-14 border-b border-neutral-200 dark:border-neutral-700"></div>
+      {/* FORM */}
+      <div className="space-y-8">
+        {/* ITEM */}
+        <div>
+          <label className="text-lg font-semibold" htmlFor="">
+            General amenities
+          </label>
+          {/* <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                        <Checkbox label="Wifi" name="Wifi" defaultChecked />
+                        <Checkbox label="Internet" name="Internet" />
+                        <Checkbox label="TV" name="TV" defaultChecked />
+                        <Checkbox
+                            label="Air conditioning"
+                            name="Air conditioning"
                         />
-                        <img src={imageUrl} className="w-40 h-40" />
-                        {/* <img src={fileUrls[index]} className="w-40 h-40" /> */}
-                      </div>
-                    )}
-                    <div className="flex text-sm text-neutral-6000 dark:text-neutral-300">
-                      <label
-                        htmlFor={`file-upload-${index}`}
-                        className="relative cursor-pointer  rounded-md font-medium text-primary-6000 hover:text-primary-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-primary-500"
-                      >
-                        <span>{index}</span>
-                        <span>Upload a file</span>
-                        <input
-                          id={`file-upload-${index}`}
-                          name={`file-upload-${index}`}
-                          type="file"
-                          className="sr-only"
-                          accept="image/*"
-                          onChange={(e) => uploadFile(e, index)}
-                          // onClick={(e) => uploadFile(e, index)}
+                        <Checkbox label="Fan" name="Fan" />
+                        <Checkbox
+                            label="Private entrance"
+                            name="Private entrance"
                         />
-                      </label>
-                      <p className="pl-1">or drag and drop</p>
-                    </div>
-                    <p className="text-xs text-neutral-500 dark:text-neutral-400">
-                      PNG, JPG, GIF up to 10MB
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-            {/* ---------------- */}
-            <div>
-              <span className="text-lg font-semibold">
-                Pictures of the place
-              </span>
-              <div className="mt-5 ">
-                <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-neutral-300 dark:border-neutral-6000 border-dashed rounded-md">
-                  <div className="space-y-1 text-center">
-                    <svg
-                      className="mx-auto h-12 w-12 text-neutral-400"
-                      stroke="currentColor"
-                      fill="none"
-                      viewBox="0 0 48 48"
-                      aria-hidden="true"
-                    >
-                      <path
-                        d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      ></path>
-                    </svg>
-                    <div className="flex text-sm text-neutral-6000 dark:text-neutral-300">
-                      <label
-                        htmlFor="file-upload-2"
-                        className="relative cursor-pointer  rounded-md font-medium text-primary-6000 hover:text-primary-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-primary-500"
-                      >
-                        <span>Upload a file</span>
-                        <input
-                          id="file-upload-2"
-                          name="file-upload-2"
-                          type="file"
-                          className="sr-only"
-                          onChange={(e) => uploadFile(e, index)}
+                        <Checkbox label="Dryer" name="Dryer" defaultChecked />
+                        <Checkbox label="Heater" name="Heater" />
+                        <Checkbox
+                            label="Washing machine"
+                            name="Washing machine"
                         />
-                      </label>
-                      <p className="pl-1">or drag and drop</p>
-                    </div>
-                    <p className="text-xs text-neutral-500 dark:text-neutral-400">
-                      PNG, JPG, GIF up to 10MB
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
+                        <Checkbox
+                            label="Detergent"
+                            name="Detergent"
+                            defaultChecked
+                        />
+                        <Checkbox label="Clothes dryer" name="Clothes dryer" />
+                        <Checkbox label="Baby cot" name="Baby cot" />
+                        <Checkbox label="Desk" name="Desk " defaultChecked />
+                        <Checkbox label="Fridge" name="Fridge" />
+                        <Checkbox label="Dryer" name="Dryer" defaultChecked />
+                    </div> */}
+          <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            {Object.keys(amenities[0]).map((key) => (
+              <Checkbox
+                className=" cursor-pointer"
+                key={key}
+                label={key}
+                name={key}
+                checked={amenities[0][key]}
+                onChange={handleCheckboxChange}
+              />
+            ))}
           </div>
         </div>
-      ))}
-    </div>
+
+        {/* ITEM */}
+        <div>
+          <label className="text-lg font-semibold" htmlFor="">
+            Other amenities
+          </label>
+          {/* <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                        <Checkbox
+                            label="Wardrobe"
+                            name="Wardrobe"
+                            defaultChecked
+                        />
+                        <Checkbox label="Cloth hook" name="Cloth hook" />
+                        <Checkbox
+                            label="Extra cushion"
+                            name="Extra cushion"
+                            defaultChecked
+                        />
+                        <Checkbox label="Gas stove" name="Gas stove" />
+                        <Checkbox label="Toilet paper" name="Toilet paper" />
+                        <Checkbox
+                            label="Free toiletries"
+                            name="Free toiletries"
+                            defaultChecked
+                        />
+                        <Checkbox label="Makeup table" name="Makeup table" />
+                        <Checkbox label="Hot pot" name="Hot pot" />
+                        <Checkbox
+                            label="Bathroom heaters"
+                            name="Bathroom heaters"
+                        />
+                        <Checkbox label="Kettle" name="Kettle" defaultChecked />
+                        <Checkbox label="Dishwasher" name="Dishwasher" />
+                        <Checkbox
+                            label="BBQ grill"
+                            name="BBQ grill"
+                            defaultChecked
+                        />
+                        <Checkbox
+                            label="Toaster"
+                            name="Toaster"
+                            defaultChecked
+                        />
+                        <Checkbox label="Towel" name="Towel" />
+                        <Checkbox label="Dining table" name="Dining table" />
+                    </div> */}
+          <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            {Object.keys(amenities[1]).map((key) => (
+              <Checkbox
+                key={key}
+                label={key}
+                name={key}
+                checked={amenities[0][key]}
+                onChange={handleCheckboxChange}
+              />
+            ))}
+          </div>
+        </div>
+
+        {/* ITEM */}
+        <div>
+          <label className="text-lg font-semibold" htmlFor="">
+            Safe amenities
+          </label>
+          {/* <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                        <Checkbox
+                            label="Fire siren"
+                            name="Fire siren"
+                            defaultChecked
+                        />
+                        <Checkbox
+                            label="Fire extinguisher"
+                            name="Fire extinguisher"
+                        />
+                        <Checkbox
+                            label="Anti-theft key"
+                            name="Anti-theft key"
+                        />
+                        <Checkbox label="Safe vault" name="Safe vault" />
+                    </div> */}
+          {/* <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            {Object.keys(amenities[2]).map((key) => (
+              <Checkbox
+                key={key}
+                label={key}
+                name={key}
+                checked={amenities[0][key]}
+                onChange={handleCheckboxChange}
+              />
+            ))}
+          </div> */}
+        </div>
+      </div>
+    </>
   );
 };
 
-export default PageAddListing7;
+export default PageAddListing4;
