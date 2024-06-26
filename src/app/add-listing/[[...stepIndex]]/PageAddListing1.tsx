@@ -93,9 +93,10 @@ const PageAddListing1: FC<PageAddListing1Props> = () => {
     }
     // Example logic to handle when to show portions input
     if (selectedValue === "Private room by portion") {
-      console.log('yuss')
+      setNumberOfPortions(2);
       setShowPortionsInput(true);
     } else {
+      setNumberOfPortions(1);
       setShowPortionsInput(false);
     }
     setRentalForm(e.target.value);
@@ -195,9 +196,9 @@ const PageAddListing1: FC<PageAddListing1Props> = () => {
         >
           <Select onChange={handleRentalFormChange} value={rentalForm}>
             {/* <option value="Share room">Share room</option> */}
-            <option value="Private room">Private room</option>
+            <option value="Private room">Private Area</option>
             <option value="Private room by portion">
-              Private room by portion
+              Private Area by portion
             </option>
             <option value="Shared Room">Shared Room</option>
             <option value="Hotel Room">Hotel Room </option>
@@ -209,6 +210,8 @@ const PageAddListing1: FC<PageAddListing1Props> = () => {
               value={numberOfPortions}
               onChange={handlePortionsInputChange}
               placeholder="Number of portions"
+              min={2}
+              title="Number of portions can not be less than 2" 
             />
           )}
         </FormItem>

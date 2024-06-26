@@ -1,6 +1,6 @@
 "use client";
 
-import React, { FC, Fragment, useState } from "react";
+import React, { FC, Fragment, useEffect, useRef, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { ArrowRightIcon, Squares2X2Icon } from "@heroicons/react/24/outline";
 import CommentListing from "@/components/CommentListing";
@@ -21,11 +21,87 @@ import StayDatesRangeInput from "./StayDatesRangeInput";
 import GuestsInput from "./GuestsInput";
 import SectionDateRange from "../SectionDateRange";
 import { Route } from "next";
+import Slider from "react-slick";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
+import Link from "next/link";
+import page from "@/app/checkout/page";
 
 export interface ListingStayDetailPageProps {}
 
+interface Page8State {
+  currency: string;
+  isPortion: Boolean;
+  basePrice: number[];
+  weekendPrice: number[];
+  monthlyDiscount: number[];
+}
+
+interface DateRange {
+  startDate: Date | null;
+  endDate: Date | null;
+}
 const ListingStayDetailPage: FC<ListingStayDetailPageProps> = ({}) => {
   //
+
+  let portions = 0;
+  const data = localStorage.getItem("page1") || "";
+  if (data) {
+    const value = JSON.parse(data)["numberOfPortions"];
+    if (value) {
+      portions = parseInt(value, 10);
+    }
+  }
+  let checkPortion = portions > 1 ? portions : 0;
+  const [myArray, setMyArray] = useState<number[]>(Array(checkPortion).fill(1));
+
+  const [page8, setPage8] = useState<Page8State>(() => {
+    const savedPage = localStorage.getItem("page8") || "";
+    return JSON.parse(savedPage);
+  });
+
+  const [price, setPrice] = useState<number[]>(() => {
+    const savedPage = localStorage.getItem("page8") || "";
+    if (savedPage) {
+      const value = JSON.parse(savedPage);
+      return value.basePrice;
+    }
+    return [199, 299];
+  });
+
+  const [selectedDates, setSelectedDates] = useState<DateRange>({
+    startDate: null,
+    endDate: null,
+  });
+  const handleDatesChange = (dates: DateRange) => {
+    setSelectedDates(dates);
+  };
+
+  const [numberOfNights, setNumberOfNights] = useState<number>(0);
+  useEffect(() => {
+    if (selectedDates.startDate && selectedDates.endDate) {
+      const numberOfNights = Math.ceil(
+        (selectedDates.endDate.getTime() - selectedDates.startDate.getTime()) /
+          (1000 * 60 * 60 * 24)
+      );
+      setNumberOfNights(numberOfNights);
+    }
+  }, [selectedDates]);
+
+  const [portionCoverFileUrls, setPortionCoverFileUrls] = useState<string[]>(
+    Array(checkPortion).fill("")
+  );
+
+  useEffect(() => {
+    const savedData = localStorage.getItem("portionCoverFileUrls") || "";
+    if (!savedData) {
+      setPortionCoverFileUrls(Array(checkPortion).fill(1));
+    } else {
+      const value = JSON.parse(savedData);
+      setPortionCoverFileUrls(value);
+    }
+    console.log("selectedDates: ", selectedDates, portionCoverFileUrls);
+  }, []);
 
   let [isOpenModalAmenities, setIsOpenModalAmenities] = useState(false);
 
@@ -513,11 +589,11 @@ const ListingStayDetailPage: FC<ListingStayDetailPageProps> = ({}) => {
 
   const renderSidebar = () => {
     return (
-      <div className="listingSectionSidebar__wrap shadow-xl">
+      <div className="listingSectionSidebar__wrap shadow-xl ">
         {/* PRICE */}
         <div className="flex justify-between">
           <span className="text-3xl font-semibold">
-            $119
+            €{price[0]}
             <span className="ml-1 text-base font-normal text-neutral-500 dark:text-neutral-400">
               /night
             </span>
@@ -527,31 +603,79 @@ const ListingStayDetailPage: FC<ListingStayDetailPageProps> = ({}) => {
 
         {/* FORM */}
         <form className="flex flex-col border border-neutral-200 dark:border-neutral-700 rounded-3xl ">
-          <StayDatesRangeInput className="flex-1 z-[11]" />
-          <div className="w-full border-b border-neutral-200 dark:border-neutral-700"></div>
+          <StayDatesRangeInput
+            className="flex-1 z-[11] border border-white"
+            onDatesChange={handleDatesChange}
+          />
+          <div className="w-full border-b border-neutral-200 dark:border-neutral-700 "></div>
           <GuestsInput className="flex-1" />
         </form>
 
         {/* SUM */}
         <div className="flex flex-col space-y-4">
           <div className="flex justify-between text-neutral-6000 dark:text-neutral-300">
-            <span>$119 x 3 night</span>
-            <span>$357</span>
+            <span>
+              € {price[0]} x {numberOfNights} nights
+            </span>
+            <span>€ {price[0] * numberOfNights}</span>
           </div>
           <div className="flex justify-between text-neutral-6000 dark:text-neutral-300">
             <span>Service charge</span>
-            <span>$0</span>
+            <span>€ 0</span>
           </div>
           <div className="border-b border-neutral-200 dark:border-neutral-700"></div>
           <div className="flex justify-between font-semibold">
             <span>Total</span>
-            <span>$199</span>
+            <span>€{price[0] * numberOfNights}</span>
           </div>
         </div>
 
         {/* SUBMIT */}
         <ButtonPrimary href={"/checkout"}>Reserve</ButtonPrimary>
       </div>
+    );
+  };
+
+  let sliderSettings = {
+    dots: true,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 2,
+    slidesToScroll: 1,
+    variableWidth: true,
+  };
+
+  const renderPortionCards = () => {
+    return (
+      <Slider {...sliderSettings} className="border border-white h-[440px]">
+        {myArray.map((item, index) => (
+          <Link href={"/listing-stay-detail"}>
+            <div
+              key={index}
+              className="border border-red-500 w-[300px] h-[440px] rounded-3xl first:ml-4 flex-shrink-0 m-4"
+            >
+              <div className="h-52 border border-green-500 flex justify-center rounded-3xl overflow-hidden flex-wrap">
+                <div className=" bg-red-600 text-white font-semibold rounded-xl mx-4 my-2 text-xs p-1">
+                  -{page8.monthlyDiscount[index]}% today
+                </div>
+                <img
+                  src={
+                    portionCoverFileUrls[index]
+                      ? portionCoverFileUrls[index]
+                      : ""
+                  }
+                  alt="No image"
+                  className="fill w-60 h-52"
+                />
+              </div>
+              <div>
+                <h2 className="ml-2 mt-2">Portion {index + 1}</h2>
+                <h3>Price: {page8.basePrice[index]}</h3>
+              </div>
+            </div>
+          </Link>
+        ))}
+      </Slider>
     );
   };
 
@@ -619,6 +743,7 @@ const ListingStayDetailPage: FC<ListingStayDetailPageProps> = ({}) => {
           {renderSection3()}
           {renderSection4()}
           <SectionDateRange />
+          {renderPortionCards()}
           {renderSection5()}
           {renderSection6()}
           {renderSection7()}

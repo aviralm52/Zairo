@@ -18,8 +18,14 @@ const PageAddListing7: FC<PageAddListing7Props> = () => {
       portions = parseInt(value, 10);
     }
   }
+  let checkPortion = portions > 1 ? portions : 0
 
-  const [myArray, setMyArray] = useState<number[]>(Array(portions).fill(1));
+  // const [myArray, setMyArray] = useState<number[]>(Array(portions).fill(1));
+  const [myArray, setMyArray] = useState<number[]> (Array(checkPortion).fill(1));
+  // if (portions > 1) {
+  //   setMyArray(Array(portions).fill(1));
+  // }
+
 
   const booleanArray = Array.from(
     { length: portions },
@@ -50,11 +56,15 @@ const PageAddListing7: FC<PageAddListing7Props> = () => {
   const [portionPictureUrls, setPortionPictureUrls] = useState<string[][]>(
     () => {
       const savedUrls = localStorage.getItem("portionPictureUrls");
+      const arrayOf5 = Array(5).fill("")
+      // return savedUrls
+      //   ? JSON.parse(savedUrls)
+      //   : Array.from({ length: portions }, () =>
+      //       Array(5).fill("*")
+      //     );
       return savedUrls
-        ? JSON.parse(savedUrls)
-        : Array.from({ length: portions }, () =>
-            Array(5).fill("*")
-          );
+      ? JSON.parse(savedUrls)
+      : Array(portions).fill(arrayOf5);
     }
   );
 
@@ -243,7 +253,7 @@ const PageAddListing7: FC<PageAddListing7Props> = () => {
       <div className="space-y-8">
         <div>
           <span className="text-2xl font-semibold">
-            Cover image Of the place
+            Cover image Of the Property
           </span>
           {/* <div>
                 <h1>Image Upload</h1>
@@ -308,7 +318,7 @@ const PageAddListing7: FC<PageAddListing7Props> = () => {
         {/* ---------------- */}
         <div>
           <span className="text-lg font-semibold">
-            Pictures of the placeisProper
+            Pictures of the Property
           </span>
           <div className="mt-5 ">
             <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-neutral-300 dark:border-neutral-6000 border-dashed rounded-md">

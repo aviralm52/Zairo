@@ -74,6 +74,8 @@ const PageAddListing9: FC<PageAddListing9Props> = () => {
     }
   }
 
+  const [myArray, setMyArray] = useState<number[]>(Array(portions).fill(1));
+
   //TODO: update listing data
   const [listingData, setListingData] = useState<ListingData>(() => {
     const savedData = localStorage.getItem("listingData");
@@ -162,7 +164,7 @@ const PageAddListing9: FC<PageAddListing9Props> = () => {
         </span>
       </div>
 
-      {datesPerPortion.map((dates, index) => (
+      {myArray.map((dates, index) => (
         <div className="border border-white rounded-xl p-2" key={index}>
           <span className="text-2xl ml-4 font-medium">Portion {index + 1}</span>
           <div className="addListingDatePickerExclude mt-2" key={index}>

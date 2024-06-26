@@ -16,6 +16,7 @@ interface Page8State {
 }
 
 const PageAddListing8: FC<PageAddListing8Props> = () => {
+
   let portions = 0;
   const data = localStorage.getItem("page1") || "";
   if (data) {
@@ -99,7 +100,7 @@ const PageAddListing8: FC<PageAddListing8Props> = () => {
         <div key={index}>
           <div>
             <h2 className="text-2xl font-semibold">
-              <span className="text-6xl">P</span>rice for{" "}
+                Price for{" "}
               {isPortion ? `Portion ${index + 1}` : "Property"}
             </h2>
             <span className="block mt-2 text-neutral-500 dark:text-neutral-400">

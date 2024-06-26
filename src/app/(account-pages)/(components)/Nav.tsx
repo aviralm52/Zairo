@@ -7,7 +7,6 @@ import React from "react";
 
 export const Nav = () => {
   const pathname = usePathname();
-
   const listNav: Route[] = [
     "/account",
     "/account-savelists",

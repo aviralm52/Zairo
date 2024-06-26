@@ -93,6 +93,7 @@ const PageAddListing10: FC<PageAddListing10Props> = () => {
           />
         </div>
 
+        <Link href={"/listing-stay-detail"}>
         <div
           className="card"
           style={{
@@ -115,19 +116,28 @@ const PageAddListing10: FC<PageAddListing10Props> = () => {
             <h6>{listingPage.address}</h6>
           </div>
         </div>
+        </Link>
 
-        <div className="flex items-center space-x-5 mt-8">
-          <ButtonSecondary href={"/add-listing/1" as Route}>
-            <PencilSquareIcon className="h-5 w-5" />
-            <span className="ml-3">Edit</span>
+        <div className="flex items-center space-x-2 mt-8">
+          <ButtonSecondary href={"/add-listing/1" as Route} className=" -ml-1 -p-8">
+            <PencilSquareIcon className="h-3 w-3 -ml-4" />
+            <span className="ml-3 text-sm">Edit</span>
           </ButtonSecondary>
 
           <Link href={"/listing-stay-detail"}>
-            <ButtonPrimary>
-              <EyeIcon className="h-5 w-5" />
-              <span className="ml-3">Preview</span>
+            <ButtonPrimary className="-p-4">
+              <EyeIcon className="h-3 w-3 -ml-4" />
+              <span className="ml-3 text-sm -p-2 -ml-1 -mr-2">Preview</span>
             </ButtonPrimary>
           </Link>
+
+          <Link href={"/listing-stay-detail"}>
+            <ButtonSecondary className="-p-4">
+              <img src="https://img.icons8.com/?size=100&id=fJXFbcW0WrW9&format=png&color=000000" alt="" className="bg-green-400 w-4 h-4 -ml-4 ronded-xl" />
+              <span className="ml-3 text-sm -p-2 -ml-1 -mr-4">Go Live</span>
+            </ButtonSecondary>
+          </Link>
+
         </div>
       </div>
       {/*  */}

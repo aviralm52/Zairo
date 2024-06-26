@@ -64,7 +64,7 @@ const PageAddListing3: FC<PageAddListing3Props> = () => {
     const value = JSON.parse(savedPage)["guests"];
     return value || emptyNumberArrayGenerator(portions);
   });
- 
+
   const [bedrooms, setBedrooms] = useState<number[]>(() => {
     const savedPage = localStorage.getItem("page3") || "";
     if (!savedPage) {
@@ -131,13 +131,13 @@ const PageAddListing3: FC<PageAddListing3Props> = () => {
   }, [portionName, portionSize, guests, bedrooms, beds, bathroom, kitchen]);
 
   return (
-    <div className=" flex justify-center items-center gap-16">
+    <div className=" flex justify-center items-center gap-16 w-[1100px] -ml-52 flex-wrap">
       {myArray.map((item, index) => (
         <div
           key={index}
-          className=" flex flex-col border border-white p-1 rounded-md shadow-lg"
+          className=" flex flex-col border border-white p-1 rounded-3xl shadow-lg p-2 pb-4"
         >
-          <h2 className="text-md font-semibold">Name of Portion {index + 1}</h2>
+          <h2 className="text-md font-semibold ml-2 mt-2">Name of Portion {index + 1}</h2>
           <input
             type="text"
             className=" bg-transparent w-5/6 mx-auto my-2 rounded-2xl text-sm"

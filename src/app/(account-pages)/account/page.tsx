@@ -1,14 +1,142 @@
-import React, { FC } from "react";
+"use client";
+import React, { FC, useEffect, useState } from "react";
 import Label from "@/components/Label";
 import Avatar from "@/shared/Avatar";
 import ButtonPrimary from "@/shared/ButtonPrimary";
 import Input from "@/shared/Input";
 import Select from "@/shared/Select";
 import Textarea from "@/shared/Textarea";
+import { emit } from "process";
 
 export interface AccountPageProps {}
 
+interface accountInfo {
+  name: string;
+  gender: string;
+  language: string;
+  username: string;
+  email: string;
+  dob: string;
+  address: string;
+  phone: string;
+  about: string;
+}
+
 const AccountPage = () => {
+
+  const [name, setName] = useState<string>(() => {
+    const savedPage = sessionStorage.getItem("accountInfo") || "";
+    if (!savedPage) {
+      return "";
+    }
+    const value = JSON.parse(savedPage)["name"];
+    return value || "";
+  })
+
+  const [gender, setGender] = useState<string>(() => {
+    const savedPage = sessionStorage.getItem("accountInfo") || "";
+    if (!savedPage) {
+      return "";
+    }
+    const value = JSON.parse(savedPage)["gender"];
+    console.log("gender: ", value);
+    return value || "";
+  })
+
+  const [language, setLanguage] = useState<string>(() => {
+    const savedPage = sessionStorage.getItem("accountInfo") || "";
+    if (!savedPage) {
+      return "";
+    }
+    const value = JSON.parse(savedPage)["language"];
+    return value || "";
+  })  
+
+  const [username, setUsername] = useState<string>(() => {
+    const savedPage = sessionStorage.getItem("accountInfo") || "";
+    if (!savedPage) {
+      return "";
+    }
+    const value = JSON.parse(savedPage)["username"];
+    return value || "";
+  })
+
+  const [email, setEmail] = useState<string>(() => {
+    const savedPage = sessionStorage.getItem("accountInfo") || "";
+    if (!savedPage) {
+      return "";
+    }
+    const value = JSON.parse(savedPage)["email"];
+    return value || "";
+  })
+
+  const [dob, setDob] = useState<string>(() => {
+    const savedPage = sessionStorage.getItem("accountInfo") || "";
+    if (!savedPage) {
+      return "";
+    }
+    const value = JSON.parse(savedPage)["dob"];
+    return value || "";
+  })
+
+  const [address, setAddress] = useState<string>(() => {
+    const savedPage = sessionStorage.getItem("accountInfo") || "";
+    if (!savedPage) {
+      return "";
+    }
+    const value = JSON.parse(savedPage)["address"];
+    return value || "";
+  })
+
+  const [phone, setPhone] = useState<string>(() => {
+    const savedPage = sessionStorage.getItem("accountInfo") || "";
+    if (!savedPage) {
+      return "";
+    }
+    const value = JSON.parse(savedPage)["phone"];
+    return value || "";
+  })
+
+  const [about, setAbout] = useState<string>(() => {
+    const savedPage = sessionStorage.getItem("accountInfo") || "";
+    if (!savedPage) {
+      return "";
+    }
+    const value = JSON.parse(savedPage)["about"];
+    return value || "";
+  })
+
+
+  const [accountInfo, setAccountInfo] = useState<accountInfo>({
+    name: name,
+    gender: gender,
+    language: language,
+    username: username,
+    email: email,
+    dob: dob,
+    address: address,
+    phone: phone,
+    about: about,
+  });
+
+  useEffect(() => {
+    const newAccountInfo: accountInfo = {
+      name: name,
+      gender: gender,
+      language: language,
+      username: username,
+      email: email,
+      dob: dob,
+      address: address,
+      phone: phone,
+      about: about,
+    }
+    setAccountInfo(newAccountInfo);
+    sessionStorage.setItem("accountInfo", JSON.stringify(newAccountInfo));
+  }, [name, gender, language, username, email, dob, address, phone, about]);
+
+
+
   return (
     <div className="space-y-6 sm:space-y-8">
       {/* HEADING */}
@@ -18,7 +146,7 @@ const AccountPage = () => {
         <div className="flex-shrink-0 flex items-start">
           <div className="relative rounded-full overflow-hidden flex">
             <Avatar sizeClass="w-32 h-32" />
-            <div className="absolute inset-0 bg-black bg-opacity-60 flex flex-col items-center justify-center text-neutral-50 cursor-pointer">
+            <div className="absolute inset-0 bg-black bg-opacity-60 flex flex-col items-center justify-center text-neutral-50 cursor-pointer ">
               <svg
                 width="30"
                 height="30"
@@ -46,46 +174,51 @@ const AccountPage = () => {
         <div className="flex-grow mt-10 md:mt-0 md:pl-16 max-w-3xl space-y-6">
           <div>
             <Label>Name</Label>
-            <Input className="mt-1.5" defaultValue="Eden Tuan" />
+            <Input className="mt-1.5" defaultValue="Eden Tuan" value={name} onChange={(e) => setName(e.target.value)}/>
           </div>
           {/* ---- */}
           <div>
             <Label>Gender</Label>
-            <Select className="mt-1.5">
+            <Select className="mt-1.5" onChange={(e) => setGender(e.target.value)}>
+              <option value=""></option>
               <option value="Male">Male</option>
               <option value="Female">Female</option>
               <option value="Other">Other</option>
             </Select>
           </div>
+          <div>
+            <Label>Language</Label>
+            <Input className="mt-1.5" defaultValue="English" value={language} onChange={(e) => setLanguage(e.target.value) } />
+          </div>
           {/* ---- */}
           <div>
             <Label>Username</Label>
-            <Input className="mt-1.5" defaultValue="@eden_tuan" />
+            <Input className="mt-1.5" defaultValue="@eden_tuan"  value={username} onChange={(e) => setUsername(e.target.value) } />
           </div>
           {/* ---- */}
           <div>
             <Label>Email</Label>
-            <Input className="mt-1.5" defaultValue="example@email.com" />
+            <Input className="mt-1.5" defaultValue="example@email.com" value={email} onChange={(e) => setEmail(e.target.value) } />
           </div>
           {/* ---- */}
           <div className="max-w-lg">
             <Label>Date of birth</Label>
-            <Input className="mt-1.5" type="date" defaultValue="1990-07-22" />
+            <Input className="mt-1.5" type="date" defaultValue="1990-07-22" value={dob} onChange={(e) => setDob(e.target.value)} />
           </div>
           {/* ---- */}
           <div>
             <Label>Addess</Label>
-            <Input className="mt-1.5" defaultValue="New york, USA" />
+            <Input className="mt-1.5" defaultValue="New york, USA" value={address} onChange={(e) => setAddress(e.target.value)}/>
           </div>
           {/* ---- */}
           <div>
             <Label>Phone number</Label>
-            <Input className="mt-1.5" defaultValue="003 888 232" />
+            <Input className="mt-1.5" defaultValue="003 888 232" value={phone} onChange={(e) => setPhone(e.target.value)} />
           </div>
           {/* ---- */}
           <div>
             <Label>About you</Label>
-            <Textarea className="mt-1.5" defaultValue="..." />
+            <Textarea className="mt-1.5" defaultValue="..."  value={about} onChange={(e) => setAbout(e.target.value)}/>
           </div>
           <div className="pt-2">
             <ButtonPrimary>Update info</ButtonPrimary>

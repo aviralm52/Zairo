@@ -9,6 +9,7 @@ import ButtonSecondary from "@/shared/ButtonSecondary";
 import Input from "@/shared/Input";
 import Select from "@/shared/Select";
 import FormItem from "../FormItem";
+import axios from 'axios';
 
 export interface PageAddListing2Props {}
 
@@ -87,6 +88,11 @@ const PageAddListing2: FC<PageAddListing2Props> = () => {
     postalCode: postalCode,
   });
 
+  const [center, setCenter] = useState({
+    lat: 55.9607377,
+    lng: 36.2172614,
+  });
+
 
   useEffect(() => {
     const newPage2: Page2State = {
@@ -102,6 +108,18 @@ const PageAddListing2: FC<PageAddListing2Props> = () => {
   }, [country, street, roomNumber, city, state, postalCode]);
 
 
+    const handleSearchLocation = async () => {
+      const address = `${page2.postalCode}, ${page2.city}, ${page2.state}, ${page2.country}`;
+      const response = await axios.get(
+        `https://maps.googleapis.com/maps/api/geocode/json?address=${address}&key=YOUR_GEOCODING_API_KEY`
+      );
+      if (response.data.results.length > 0) {
+        const { lat, lng } = response.data.results[0].geometry.location;
+        setCenter({ lat, lng });
+      }
+    };  
+
+
   return (
     <>
       <h2 className="text-2xl font-semibold">Your place location</h2>
@@ -115,6 +133,7 @@ const PageAddListing2: FC<PageAddListing2Props> = () => {
         {/* ITEM */}
         <FormItem label="Country/Region">
           <Select onChange={(e) => setCountry(e.target.value)} value={country}>
+            <option value="India">India</option>
             <option value="Viet Nam">Viet Nam</option>
             <option value="Thailand">Thailand</option>
             <option value="France">France</option>
@@ -124,20 +143,20 @@ const PageAddListing2: FC<PageAddListing2Props> = () => {
           </Select>
         </FormItem>
         <FormItem label="Street">
-          <Input placeholder="..." value={street} onChange={(e) => setStreet(e.target.value)}/>
+          <Input placeholder="..." value={street} onChange={(e) => {setStreet(e.target.value); handleSearchLocation()}}/>
         </FormItem>
         <FormItem label="Room number (optional)">
-          <Input value={roomNumber} onChange={(e) => setRoomNumber(e.target.value)}/>
+          <Input value={roomNumber} onChange={(e) => {setRoomNumber(e.target.value); handleSearchLocation()}}/>
         </FormItem>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-5">
           <FormItem label="City">
-            <Input value={city} onChange={(e) => setCity(e.target.value)}/>
+            <Input value={city} onChange={(e) => {setCity(e.target.value); handleSearchLocation()}}/>
           </FormItem>
           <FormItem label="State">
-            <Input value={state} onChange={(e) => setState(e.target.value)}/>
+            <Input value={state} onChange={(e) => {setState(e.target.value); handleSearchLocation()}}/>
           </FormItem>
           <FormItem label="Postal code">
-            <Input value={postalCode} onChange={(e) => setPostalCode(e.target.value)}/>
+            <Input value={postalCode} onChange={(e) => {setPostalCode(e.target.value); handleSearchLocation()}}/>
           </FormItem>
         </div>
         <div>
@@ -155,8 +174,10 @@ const PageAddListing2: FC<PageAddListing2Props> = () => {
                   yesIWantToUseGoogleMapApiInternals
                   defaultZoom={15}
                   defaultCenter={{
-                    lat: 55.9607277,
-                    lng: 36.2172614,
+                    // lat: 55.9607377,
+                    // lng: 36.2172614,
+                    lat: center.lat,
+                    lng: center.lng,
                   }}
                 >
                   <LocationMarker lat={55.9607277} lng={36.2172614} />

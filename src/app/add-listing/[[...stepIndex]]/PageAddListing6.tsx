@@ -10,8 +10,20 @@ interface Page6State {
 }
 
 const PageAddListing6: FC<PageAddListing6Props> = () => {
+
   let portions = 0;
-  const [myArray, setMyArray] = useState<number[]>([]);
+  const data = localStorage.getItem("page1") || "";
+  if (data) {
+    const value = JSON.parse(data)["numberOfPortions"];
+    if (value) {
+      portions = parseInt(value, 10);
+    }
+  }
+
+  const [myArray, setMyArray] = useState<number[]>(Array(portions).fill(1));
+
+
+
   const [portionNames, setPortionNames] = useState<string[]>(() => {
     const savedPage = localStorage.getItem("page3") || "";
     if (!savedPage) {
@@ -20,19 +32,6 @@ const PageAddListing6: FC<PageAddListing6Props> = () => {
     const value = JSON.parse(savedPage)["portionName"];
     return value || [];
   });
-
-  useEffect(() => {
-    const storedValue = localStorage.getItem("page1") || "";
-    const data = JSON.parse(storedValue);
-    const value = data["numberOfPortions"];
-    if (value) {
-      portions = parseInt(value);
-      if (portions > 1) {
-        const newArray = Array(portions).fill(1);
-        setMyArray(newArray);
-      }
-    }
-  }, []);
 
   const [reviews, setReviews] = useState<string[]>(() => {
     const savedPage = localStorage.getItem("page6") || "";
