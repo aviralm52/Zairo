@@ -120,7 +120,7 @@ const PageAddListing8: FC<PageAddListing8Props> = () => {
                 <option value="EURRO">EURO</option>
               </Select>
             </FormItem>
-            <FormItem label="Base price  (Monday -Thuday)">
+            <FormItem label="Base price  (Monday -Thursday)">
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <span className="text-gray-500">€</span>
@@ -166,7 +166,7 @@ const PageAddListing8: FC<PageAddListing8Props> = () => {
               </div>
             </FormItem>
             {/* ----- */}
-            <FormItem label="Long term price (Monthly discount) ">
+            <FormItem label="Weekly Discounts ">
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <span className="text-gray-500">%</span>

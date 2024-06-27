@@ -13,10 +13,12 @@ const PageAddListing4: FC<PageAddListing4Props> = () => {
   const [savedAmenitites, setSavedAmenities] = useState<checkBoxState[]>(() => {
     const savedPage = localStorage.getItem("page4") || "";
     if (!savedPage) {
-      return [generalAmenities, otherAmenities, safeAmenities];
+      // return [generalAmenities, otherAmenities, safeAmenities];
+      return [[], [], []];
     }
     const value = JSON.parse(savedPage);
-    return value || [generalAmenities, otherAmenities, safeAmenities];
+    // return value || [generalAmenities, otherAmenities, safeAmenities];
+    return value || [[], [], []];
   });
 
   const generalAmenities: checkBoxState = {

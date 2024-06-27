@@ -1,6 +1,6 @@
 "use client";
 
-import React, { Fragment, FC, useState } from "react";
+import React, { Fragment, FC, useState, useEffect } from "react";
 import { Popover, Transition } from "@headlessui/react";
 import NcInputNumber from "@/components/NcInputNumber";
 import { UserPlusIcon } from "@heroicons/react/24/outline";
@@ -9,12 +9,20 @@ import { GuestsObject } from "@/app/(client-components)/type";
 
 export interface GuestsInputProps {
   className?: string;
+  onGuestsChange?: (totalGuests: number) => void;
 }
 
-const GuestsInput: FC<GuestsInputProps> = ({ className = "flex-1" }) => {
+const GuestsInput: FC<GuestsInputProps> = ({ className = "flex-1", onGuestsChange}) => {
   const [guestAdultsInputValue, setGuestAdultsInputValue] = useState(2);
   const [guestChildrenInputValue, setGuestChildrenInputValue] = useState(1);
   const [guestInfantsInputValue, setGuestInfantsInputValue] = useState(1);
+
+  // const [totalPeople, setTotalPeople] = localStorage.getItem(() => {
+  //   const savedPage = localStorage.getItem('totalPeople') || "";
+  //   if (savedPage){
+
+  //   }
+  // }) 
 
   const handleChangeData = (value: number, type: keyof GuestsObject) => {
     let newValue = {
@@ -34,10 +42,33 @@ const GuestsInput: FC<GuestsInputProps> = ({ className = "flex-1" }) => {
       setGuestInfantsInputValue(value);
       newValue.guestInfants = value;
     }
+    updateTotalGuests(newValue);
   };
+
+
+  const updateTotalGuests = (newValue: GuestsObject) => {
+    const totalGuests = newValue.guestChildren + newValue.guestAdults + newValue.guestInfants;
+    if (onGuestsChange) {
+      onGuestsChange(totalGuests);
+    }
+  };
+
+
+
+  useEffect(() => {
+    updateTotalGuests({
+      guestAdults: guestAdultsInputValue,
+      guestChildren: guestChildrenInputValue,
+      guestInfants: guestInfantsInputValue,
+    });
+  }, []);
+
 
   const totalGuests =
     guestChildrenInputValue + guestAdultsInputValue + guestInfantsInputValue;
+
+  const savedData = localStorage.getItem('totalGuests') || "";
+  // const savedTotal = JSON.parse(savedData);
 
   return (
     <Popover className={`flex relative ${className}`}>
@@ -56,6 +87,7 @@ const GuestsInput: FC<GuestsInputProps> = ({ className = "flex-1" }) => {
               </div>
               <div className="flex-grow">
                 <span className="block xl:text-lg font-semibold">
+                  {/* {totalGuests || ""} Guests */}
                   {totalGuests || ""} Guests
                 </span>
                 <span className="block mt-1 text-sm text-neutral-400 leading-none font-light">
@@ -118,5 +150,6 @@ const GuestsInput: FC<GuestsInputProps> = ({ className = "flex-1" }) => {
     </Popover>
   );
 };
+
 
 export default GuestsInput;

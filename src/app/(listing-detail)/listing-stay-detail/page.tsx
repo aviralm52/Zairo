@@ -15,7 +15,7 @@ import ButtonClose from "@/shared/ButtonClose";
 import Input from "@/shared/Input";
 import LikeSaveBtns from "@/components/LikeSaveBtns";
 import Image from "next/image";
-import { usePathname, useRouter } from "next/navigation";
+import { useParams, usePathname, useRouter } from "next/navigation";
 import { Amenities_demos, PHOTOS } from "./constant";
 import StayDatesRangeInput from "./StayDatesRangeInput";
 import GuestsInput from "./GuestsInput";
@@ -26,9 +26,32 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import Link from "next/link";
 import page from "@/app/checkout/page";
+import { IndexKind, isConstructorDeclaration } from "typescript";
+import { useSearchParams } from "next/navigation";
+import { FaUser } from "react-icons/fa";
+import { IoIosBed } from "react-icons/io";
+import { FaBath } from "react-icons/fa";
+import { SlSizeFullscreen } from "react-icons/sl";
+import { FaHeart } from "react-icons/fa";
+import { MdCancel } from "react-icons/md";
 
-export interface ListingStayDetailPageProps {}
+export interface ListingStayDetailPageProps {
+  card: {
+    id: number;
+    title: string;
+    description: string;
+  };
+}
 
+interface Page3State {
+  portionName: string[];
+  portionSize: number[];
+  guests: number[];
+  bedrooms: number[];
+  beds: number[];
+  bathroom: number[];
+  kitchen: number[];
+}
 interface Page8State {
   currency: string;
   isPortion: Boolean;
@@ -41,8 +64,14 @@ interface DateRange {
   startDate: Date | null;
   endDate: Date | null;
 }
-const ListingStayDetailPage: FC<ListingStayDetailPageProps> = ({}) => {
+const ListingStayDetailPage: FC<ListingStayDetailPageProps> = ({ card }) => {
   //
+
+  const thisPathname = usePathname();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const indexId = searchParams.get("id") || 0;
 
   let portions = 0;
   const data = localStorage.getItem("page1") || "";
@@ -57,7 +86,18 @@ const ListingStayDetailPage: FC<ListingStayDetailPageProps> = ({}) => {
 
   const [page8, setPage8] = useState<Page8State>(() => {
     const savedPage = localStorage.getItem("page8") || "";
-    return JSON.parse(savedPage);
+    if (savedPage) {
+      return JSON.parse(savedPage);
+    }
+    return "";
+  });
+
+  const [page3, setPage3] = useState<Page3State>(() => {
+    const savedPage = localStorage.getItem("page3") || "";
+    if (savedPage) {
+      return JSON.parse(savedPage);
+    }
+    return "";
   });
 
   const [price, setPrice] = useState<number[]>(() => {
@@ -66,7 +106,7 @@ const ListingStayDetailPage: FC<ListingStayDetailPageProps> = ({}) => {
       const value = JSON.parse(savedPage);
       return value.basePrice;
     }
-    return [199, 299];
+    return [0, 0];
   });
 
   const [selectedDates, setSelectedDates] = useState<DateRange>({
@@ -105,9 +145,6 @@ const ListingStayDetailPage: FC<ListingStayDetailPageProps> = ({}) => {
 
   let [isOpenModalAmenities, setIsOpenModalAmenities] = useState(false);
 
-  const thisPathname = usePathname();
-  const router = useRouter();
-
   function closeModalAmenities() {
     setIsOpenModalAmenities(false);
   }
@@ -120,6 +157,22 @@ const ListingStayDetailPage: FC<ListingStayDetailPageProps> = ({}) => {
     router.push(`${thisPathname}/?modal=PHOTO_TOUR_SCROLLABLE` as Route);
   };
 
+  const [location, setLocation] = useState<string[]>(() => {
+    const savedPage = localStorage.getItem("page2") || "";
+    if (savedPage) {
+      const value = JSON.parse(savedPage);
+      return [
+        value.country,
+        value.state,
+        value.city,
+        value.postalCode,
+        value.street,
+        value.roomNumber,
+      ];
+    }
+    return ["", "", "", "", "", ""];
+  });
+
   const renderSection1 = () => {
     return (
       <div className="listingSection__wrap !space-y-6">
@@ -131,7 +184,7 @@ const ListingStayDetailPage: FC<ListingStayDetailPageProps> = ({}) => {
 
         {/* 2 */}
         <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold">
-          Beach House in Collingwood
+          {page3.portionName[indexId]}
         </h2>
 
         {/* 3 */}
@@ -140,7 +193,9 @@ const ListingStayDetailPage: FC<ListingStayDetailPageProps> = ({}) => {
           <span>·</span>
           <span>
             <i className="las la-map-marker-alt"></i>
-            <span className="ml-1"> Tokyo, Jappan</span>
+            <span className="ml-1">
+              {location[2]}, {location[0]}
+            </span>
           </span>
         </div>
 
@@ -161,33 +216,37 @@ const ListingStayDetailPage: FC<ListingStayDetailPageProps> = ({}) => {
         {/* 6 */}
         <div className="flex items-center justify-between xl:justify-start space-x-8 xl:space-x-12 text-sm text-neutral-700 dark:text-neutral-300">
           <div className="flex items-center space-x-3 ">
-            <i className=" las la-user text-2xl "></i>
-            <span className="">
-              6 <span className="hidden sm:inline-block">guests</span>
-            </span>
+            <FaUser className="text-2xl" />
+            <h3 className=" text-sm">{page3.guests[indexId]} Guests</h3>
           </div>
           <div className="flex items-center space-x-3">
-            <i className=" las la-bed text-2xl"></i>
-            <span className=" ">
-              6 <span className="hidden sm:inline-block">beds</span>
-            </span>
+            <IoIosBed className="text-2xl" />
+            <h3 className=" text-sm">{page3.bedrooms[indexId]} Bedrooms</h3>
           </div>
           <div className="flex items-center space-x-3">
-            <i className=" las la-bath text-2xl"></i>
-            <span className=" ">
-              3 <span className="hidden sm:inline-block">baths</span>
-            </span>
+            <FaBath className="text-2xl" />
+            <h3 className=" text-sm">{page3.bathroom[indexId]} Bathroom</h3>
           </div>
           <div className="flex items-center space-x-3">
-            <i className=" las la-door-open text-2xl"></i>
-            <span className=" ">
-              2 <span className="hidden sm:inline-block">bedrooms</span>
-            </span>
+            <SlSizeFullscreen className="text-2xl" />
+            <h3 className=" text-sm">{page3.portionSize[indexId]} sq</h3>
           </div>
         </div>
       </div>
     );
   };
+
+  const [isExpanded, setIsExpanded] = useState<boolean>(false);
+
+  const [description, setDescription] = useState<string[]>(() => {
+    const savedPage = localStorage.getItem("page6") || "";
+    if (savedPage) {
+      const value = JSON.parse(savedPage);
+      return value.reviews;
+    }
+    const emptyArray = Array(portions).fill("");
+    return emptyArray;
+  });
 
   const renderSection2 = () => {
     return (
@@ -213,6 +272,27 @@ const ListingStayDetailPage: FC<ListingStayDetailPageProps> = ({}) => {
             while cycling can be enjoyed nearby.
           </span>
         </div>
+        <div className="relative">
+          <div>
+            <h3
+              className="cursor-pointer text-medium"
+              onClick={() => setIsExpanded((prev) => !prev)}
+            >
+              {!isExpanded && <h4 className="font-medium underline">Know more about {page3.portionName[indexId]}</h4>}
+            </h3>
+          </div>
+          <div>
+            {isExpanded && <MdCancel className="text-2xl cursor-pointer absolute right-4" onClick={() => setIsExpanded((prev) => !prev)} />}
+          </div>
+        </div>
+        {isExpanded && (
+          <div className="">
+            <h2 className=" font-medium text-lg underline">
+              Portion {parseInt(indexId,10) + 1}
+            </h2>
+            <h3>{description[indexId]}</h3>
+          </div>
+        )}
       </div>
     );
   };
@@ -337,19 +417,19 @@ const ListingStayDetailPage: FC<ListingStayDetailPageProps> = ({}) => {
           <div className="text-sm sm:text-base text-neutral-6000 dark:text-neutral-300 -mb-4">
             <div className="p-4 bg-neutral-100 dark:bg-neutral-800 flex justify-between items-center space-x-4 rounded-lg">
               <span>Monday - Thursday</span>
-              <span>$199</span>
+              <span>€ {price[indexId]}</span>
             </div>
-            <div className="p-4  flex justify-between items-center space-x-4 rounded-lg">
+            {/* <div className="p-4  flex justify-between items-center space-x-4 rounded-lg">
               <span>Monday - Thursday</span>
               <span>$199</span>
-            </div>
+            </div> */}
             <div className="p-4 bg-neutral-100 dark:bg-neutral-800 flex justify-between items-center space-x-4 rounded-lg">
               <span>Friday - Sunday</span>
-              <span>$219</span>
+              <span>€ {page8.weekendPrice[indexId]}</span>
             </div>
             <div className="p-4 flex justify-between items-center space-x-4 rounded-lg">
               <span>Rent by month</span>
-              <span>-8.34 %</span>
+              <span>-{page8.monthlyDiscount[indexId]} %</span>
             </div>
             <div className="p-4 bg-neutral-100 dark:bg-neutral-800 flex justify-between items-center space-x-4 rounded-lg">
               <span>Minimum number of nights</span>
@@ -587,13 +667,25 @@ const ListingStayDetailPage: FC<ListingStayDetailPageProps> = ({}) => {
     );
   };
 
+  const [totalGuests, setTotalGuests] = useState<number>(() => {
+    const savedValue = localStorage.getItem("totalGuests") || "";
+    if(savedValue){
+      const total = JSON.parse(savedValue);
+      return total;
+    }
+    return 0;
+  });
+  const handleGuestChange = (totalGuests: number) => {
+    setTotalGuests(totalGuests);
+  }
+
   const renderSidebar = () => {
     return (
       <div className="listingSectionSidebar__wrap shadow-xl ">
         {/* PRICE */}
         <div className="flex justify-between">
           <span className="text-3xl font-semibold">
-            €{price[0]}
+            € {price[indexId]}
             <span className="ml-1 text-base font-normal text-neutral-500 dark:text-neutral-400">
               /night
             </span>
@@ -604,20 +696,20 @@ const ListingStayDetailPage: FC<ListingStayDetailPageProps> = ({}) => {
         {/* FORM */}
         <form className="flex flex-col border border-neutral-200 dark:border-neutral-700 rounded-3xl ">
           <StayDatesRangeInput
-            className="flex-1 z-[11] border border-white"
+            className="flex-1 z-[11]"
             onDatesChange={handleDatesChange}
           />
           <div className="w-full border-b border-neutral-200 dark:border-neutral-700 "></div>
-          <GuestsInput className="flex-1" />
+          <GuestsInput className="flex-1" onGuestsChange={handleGuestChange}/>
         </form>
 
         {/* SUM */}
         <div className="flex flex-col space-y-4">
           <div className="flex justify-between text-neutral-6000 dark:text-neutral-300">
             <span>
-              € {price[0]} x {numberOfNights} nights
+              € {price[indexId]} x {numberOfNights} nights
             </span>
-            <span>€ {price[0] * numberOfNights}</span>
+            <span>€ {price[indexId] * numberOfNights}</span>
           </div>
           <div className="flex justify-between text-neutral-6000 dark:text-neutral-300">
             <span>Service charge</span>
@@ -626,7 +718,7 @@ const ListingStayDetailPage: FC<ListingStayDetailPageProps> = ({}) => {
           <div className="border-b border-neutral-200 dark:border-neutral-700"></div>
           <div className="flex justify-between font-semibold">
             <span>Total</span>
-            <span>€{price[0] * numberOfNights}</span>
+            <span>€ {price[indexId] * numberOfNights}</span>
           </div>
         </div>
 
@@ -638,26 +730,52 @@ const ListingStayDetailPage: FC<ListingStayDetailPageProps> = ({}) => {
 
   let sliderSettings = {
     dots: true,
-    infinite: true,
+    infinite: false,
     speed: 500,
     slidesToShow: 2,
     slidesToScroll: 1,
     variableWidth: true,
   };
 
+  const [clicked, setClicked] = useState<boolean[]>(
+    Array(portions).fill(false)
+  );
+
+  const handleLike = (index: number) => {
+    const newLike = [...clicked];
+    newLike[index] = !clicked[index];
+    setClicked(newLike);
+  };
+
   const renderPortionCards = () => {
     return (
-      <Slider {...sliderSettings} className="border border-white h-[440px]">
+      <Slider {...sliderSettings} className=" h-[440px]">
         {myArray.map((item, index) => (
-          <Link href={"/listing-stay-detail"}>
-            <div
-              key={index}
-              className="border border-red-500 w-[300px] h-[440px] rounded-3xl first:ml-4 flex-shrink-0 m-4"
-            >
-              <div className="h-52 border border-green-500 flex justify-center rounded-3xl overflow-hidden flex-wrap">
-                <div className=" bg-red-600 text-white font-semibold rounded-xl mx-4 my-2 text-xs p-1">
+          <div
+            key={index}
+            className=" w-[250px] h-[380px] rounded-3xl first:ml-4 flex-shrink-0 m-4 shadow-sm shadow-slate-400 border-1 border-slate-500"
+          >
+            <div className="h-52 flex justify-center rounded-3xl overflow-hidden flex-wrap relative">
+              {page8?.monthlyDiscount ? (
+                <div className=" absolute bg-red-600 text-white font-medium rounded-xl mx-4 my-2 text-xs p-1 left-1">
                   -{page8.monthlyDiscount[index]}% today
                 </div>
+              ) : (
+                <div></div>
+              )}
+              <FaHeart
+                className={`absolute text-2xl right-4 top-2 cursor-pointer ${
+                  clicked[index] ? "text-red-500" : ""
+                }`}
+                onClick={(e) => handleLike(index)}
+              />
+              <Link
+                href={{
+                  pathname: "/listing-stay-detail",
+                  query: { id: index },
+                }}
+                key={index}
+              >
                 <img
                   src={
                     portionCoverFileUrls[index]
@@ -665,15 +783,36 @@ const ListingStayDetailPage: FC<ListingStayDetailPageProps> = ({}) => {
                       : ""
                   }
                   alt="No image"
-                  className="fill w-60 h-52"
+                  className="fill w-56 h-48"
                 />
+              </Link>
+            </div>
+            <div className="flex gap-4 justify-center">
+              <div className="flex gap-2 items-center">
+                <FaUser className="text-md" />
+                <h3 className=" text-sm">{page3.guests[index]}</h3>
               </div>
-              <div>
-                <h2 className="ml-2 mt-2">Portion {index + 1}</h2>
-                <h3>Price: {page8.basePrice[index]}</h3>
+              <div className="flex gap-2 items-center">
+                <IoIosBed className="text-md" />
+                <h3 className=" text-sm">{page3.bedrooms[index]}</h3>
+              </div>
+              <div className="flex gap-2 items-center">
+                <FaBath className="text-md" />
+                <h3 className=" text-sm">{page3.bathroom[index]}</h3>
+              </div>
+              <div className="flex gap-2 items-center">
+                <SlSizeFullscreen className="text-md" />
+                <h3 className=" text-sm">{page3.portionSize[index]} sq</h3>
               </div>
             </div>
-          </Link>
+            <div>
+              <h2 className="ml-6 mt-2 text-lg font-medium">Portion {index + 1}</h2>
+            </div>
+            <div className=" h-0.5 w-12 bg-slate-600 rounded-xl ml-4 mt-4"></div>
+            <div>
+                <h2 className="text-xl font-bold ml-4 mt-4"> € {page8.basePrice[index]} /night</h2>
+            </div>
+          </div>
         ))}
       </Slider>
     );
