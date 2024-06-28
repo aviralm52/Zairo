@@ -67,7 +67,15 @@ const PageAddListing5: FC<PageAddListing5Props> = () => {
   });
 
   useEffect(() => {
-    localStorage.setItem("page5", JSON.stringify(page5));
+    const newPage5 : Page5State = {
+      smoking: page5.smoking,
+      pet: page5.pet,
+      party: page5.party,
+      cooking: page5.cooking,
+      additionalRules: additionalRules
+    }
+    setPage5(newPage5);
+    localStorage.setItem("page5", JSON.stringify(newPage5));
   }, [page5, additionalRules]);
 
   const renderRadio = (
@@ -190,13 +198,13 @@ const PageAddListing5: FC<PageAddListing5Props> = () => {
                 <i
                   className="text-2xl text-neutral-400 las la-times-circle hover:text-neutral-900 dark:hover:text-neutral-100 cursor-pointer"
                   onClick={() =>
-                    setAdditionalRules([
+                    setAdditionalRules((prev) => { return [
                       ...additionalRules.slice(0, index),
                       ...additionalRules.slice(
                         index + 1,
                         additionalRules.length
                       ),
-                    ])
+                    ]})
                   }
                 ></i>
               </div>

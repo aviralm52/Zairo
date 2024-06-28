@@ -7,6 +7,7 @@ import DatePickerCustomHeaderTwoMonth from "@/components/DatePickerCustomHeaderT
 import DatePickerCustomDay from "@/components/DatePickerCustomDay";
 import DatePicker from "react-datepicker";
 import ClearDataButton from "@/app/(client-components)/(HeroSearchForm)/ClearDataButton";
+import { isConstructorDeclaration } from "typescript";
 
 export interface StayDatesRangeInputProps {
   className?: string;
@@ -16,24 +17,60 @@ export interface StayDatesRangeInputProps {
   }) => void;
 }
 
+interface dateState{
+  startDate: Date | null;
+  endDate: Date | null;
+}
+
 const StayDatesRangeInput: FC<StayDatesRangeInputProps> = ({
   className = "flex-1",
   onDatesChange,
 }) => {
-  const [startDate, setStartDate] = useState<Date | null>(
-    new Date("2023/02/06")
-  );
-  const [endDate, setEndDate] = useState<Date | null>(new Date("2023/02/23"));
-  //
+  // const [startDate, setStartDate] = useState<Date | null>(
+  //   new Date("2023/02/06")
+  // );
+  // const [endDate, setEndDate] = useState<Date | null>(new Date("2023/02/23"));
+  
+  const [startDate, setStartDate] = useState<Date | null>(() => {
+    const savedDate = localStorage.getItem("dates") || "";
+    if(!savedDate){
+      return new Date();
+    }
+    const value = JSON.parse(savedDate)["startDate"];
+    const date = new Date(value);
+    return date || new Date();
+  });
+
+  const [endDate, setEndDate] = useState<Date | null>(() => {
+    const savedDate = localStorage.getItem("dates") || "";
+    if(!savedDate){
+      return new Date();
+    }
+    const value = JSON.parse(savedDate)["endDate"];
+    const date = new Date(value);
+    return date || new Date();
+  });
+
 
   const onChangeDate = (dates: [Date | null, Date | null]) => {
     const [start, end] = dates;
     setStartDate(start);
     setEndDate(end);
+
+    const newDate : dateState = {
+      startDate: start,
+      endDate: end
+    }
+    localStorage.setItem("dates", JSON.stringify(newDate));
+
     if (onDatesChange) {
       onDatesChange({ startDate: start, endDate: end });
     }
   };
+
+  // const s = new Date(startDate);
+  // const e = new Date(endDate);
+  // console.log("date: ", s, e)
 
   const renderInput = () => {
     return (

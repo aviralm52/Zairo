@@ -354,6 +354,7 @@ const PageAddListing7: FC<PageAddListing7Props> = () => {
                           {/* <MdCancel className=" text-right ml-auto text-xl cursor-pointer mt-12"/> */}
                           <img
                             src={propertyPictureUrls[i]}
+                            alt="No Image"
                             className="w-28 h-28 object-contain rounded-lg  border border-gray-500"
                           />
                         </div>

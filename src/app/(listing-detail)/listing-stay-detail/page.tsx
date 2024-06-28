@@ -34,6 +34,9 @@ import { FaBath } from "react-icons/fa";
 import { SlSizeFullscreen } from "react-icons/sl";
 import { FaHeart } from "react-icons/fa";
 import { MdCancel } from "react-icons/md";
+import "react-responsive-carousel/lib/styles/carousel.min.css"; // requires a loader
+import { Carousel } from "react-responsive-carousel";
+import Modal from "react-modal";
 
 export interface ListingStayDetailPageProps {
   card: {
@@ -64,14 +67,20 @@ interface DateRange {
   startDate: Date | null;
   endDate: Date | null;
 }
+
 const ListingStayDetailPage: FC<ListingStayDetailPageProps> = ({ card }) => {
   //
+
+  // useEffect(() => {
+  //   Modal.setAppElement('#__next'); // Ensure this runs after the component mounts
+  // }, []);
 
   const thisPathname = usePathname();
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const indexId = searchParams.get("id") || 0;
+  const param = searchParams.get("id") || 0;
+  const indexId: number = parseInt(param, 10);
 
   let portions = 0;
   const data = localStorage.getItem("page1") || "";
@@ -117,16 +126,29 @@ const ListingStayDetailPage: FC<ListingStayDetailPageProps> = ({ card }) => {
     setSelectedDates(dates);
   };
 
+  const [savedDates, setSavedDates] = useState<Date[]>(() => {
+    const saved = localStorage.getItem("dates") || "";
+    if (saved) {
+      const value = JSON.parse(saved);
+      const start = new Date(value.startDate);
+      const end = new Date(value.endDate);
+      // return [value.startDate, value.endDate];
+      return [start, end];
+    }
+    const today = new Date();
+    return [today, today];
+  });
+
   const [numberOfNights, setNumberOfNights] = useState<number>(0);
   useEffect(() => {
-    if (selectedDates.startDate && selectedDates.endDate) {
+    if (savedDates[0] && savedDates[1]) {
       const numberOfNights = Math.ceil(
-        (selectedDates.endDate.getTime() - selectedDates.startDate.getTime()) /
+        (savedDates[1].getTime() - savedDates[0].getTime()) /
           (1000 * 60 * 60 * 24)
       );
       setNumberOfNights(numberOfNights);
     }
-  }, [selectedDates]);
+  }, [savedDates]);
 
   const [portionCoverFileUrls, setPortionCoverFileUrls] = useState<string[]>(
     Array(checkPortion).fill("")
@@ -237,7 +259,6 @@ const ListingStayDetailPage: FC<ListingStayDetailPageProps> = ({ card }) => {
   };
 
   const [isExpanded, setIsExpanded] = useState<boolean>(false);
-
   const [description, setDescription] = useState<string[]>(() => {
     const savedPage = localStorage.getItem("page6") || "";
     if (savedPage) {
@@ -278,17 +299,26 @@ const ListingStayDetailPage: FC<ListingStayDetailPageProps> = ({ card }) => {
               className="cursor-pointer text-medium"
               onClick={() => setIsExpanded((prev) => !prev)}
             >
-              {!isExpanded && <h4 className="font-medium underline">Know more about {page3.portionName[indexId]}</h4>}
+              {!isExpanded && (
+                <h4 className="font-medium underline">
+                  Know more about {page3.portionName[indexId]}
+                </h4>
+              )}
             </h3>
           </div>
           <div>
-            {isExpanded && <MdCancel className="text-2xl cursor-pointer absolute right-4" onClick={() => setIsExpanded((prev) => !prev)} />}
+            {isExpanded && (
+              <MdCancel
+                className="text-2xl cursor-pointer absolute right-4"
+                onClick={() => setIsExpanded((prev) => !prev)}
+              />
+            )}
           </div>
         </div>
         {isExpanded && (
           <div className="">
             <h2 className=" font-medium text-lg underline">
-              Portion {parseInt(indexId,10) + 1}
+              Portion {indexId + 1}
             </h2>
             <h3>{description[indexId]}</h3>
           </div>
@@ -591,7 +621,7 @@ const ListingStayDetailPage: FC<ListingStayDetailPageProps> = ({ card }) => {
         <div>
           <h2 className="text-2xl font-semibold">Location</h2>
           <span className="block mt-2 text-neutral-500 dark:text-neutral-400">
-            San Diego, CA, United States of America (SAN-San Diego Intl.)
+            {location[2]}, {location[1]}, {location[0]}
           </span>
         </div>
         <div className="w-14 border-b border-neutral-200 dark:border-neutral-700" />
@@ -612,6 +642,24 @@ const ListingStayDetailPage: FC<ListingStayDetailPageProps> = ({ card }) => {
       </div>
     );
   };
+
+  const [time, setTime] = useState<number[]>(() => {
+    const savedPage = localStorage.getItem("page9") || "";
+    if (!savedPage) {
+      return [10, 12];
+    }
+    const value = JSON.parse(savedPage)["time"];
+    return value || [10, 12];
+  });
+
+  const [additionalRules, setAdditionalRules] = useState<string[]>(() => {
+    const savedPage = localStorage.getItem("page5") || "";
+    if (!savedPage) {
+      return [];
+    }
+    const value = JSON.parse(savedPage)["additionalRules"];
+    return value || [];
+  });
 
   const renderSection8 = () => {
     return (
@@ -639,11 +687,11 @@ const ListingStayDetailPage: FC<ListingStayDetailPageProps> = ({ card }) => {
           <div className="mt-3 text-neutral-500 dark:text-neutral-400 max-w-md text-sm sm:text-base">
             <div className="flex space-x-10 justify-between p-3 bg-neutral-100 dark:bg-neutral-800 rounded-lg">
               <span>Check-in</span>
-              <span>08:00 am - 12:00 am</span>
+              <span>{time[0]}:00 am</span>
             </div>
             <div className="flex space-x-10 justify-between p-3">
               <span>Check-out</span>
-              <span>02:00 pm - 04:00 pm</span>
+              <span>{time[1]}:00 pm</span>
             </div>
           </div>
         </div>
@@ -654,12 +702,9 @@ const ListingStayDetailPage: FC<ListingStayDetailPageProps> = ({ card }) => {
           <h4 className="text-lg font-semibold">Special Note</h4>
           <div className="prose sm:prose">
             <ul className="mt-3 text-neutral-500 dark:text-neutral-400 space-y-2">
-              <li>
-                Ban and I will work together to keep the landscape and
-                environment green and clean by not littering, not using
-                stimulants and respecting people around.
-              </li>
-              <li>Do not sing karaoke past 11:30</li>
+              {additionalRules.map((rule, index) => {
+                return <li key={index}>{rule}</li>;
+              })}
             </ul>
           </div>
         </div>
@@ -669,7 +714,7 @@ const ListingStayDetailPage: FC<ListingStayDetailPageProps> = ({ card }) => {
 
   const [totalGuests, setTotalGuests] = useState<number>(() => {
     const savedValue = localStorage.getItem("totalGuests") || "";
-    if(savedValue){
+    if (savedValue) {
       const total = JSON.parse(savedValue);
       return total;
     }
@@ -677,7 +722,7 @@ const ListingStayDetailPage: FC<ListingStayDetailPageProps> = ({ card }) => {
   });
   const handleGuestChange = (totalGuests: number) => {
     setTotalGuests(totalGuests);
-  }
+  };
 
   const renderSidebar = () => {
     return (
@@ -700,7 +745,7 @@ const ListingStayDetailPage: FC<ListingStayDetailPageProps> = ({ card }) => {
             onDatesChange={handleDatesChange}
           />
           <div className="w-full border-b border-neutral-200 dark:border-neutral-700 "></div>
-          <GuestsInput className="flex-1" onGuestsChange={handleGuestChange}/>
+          <GuestsInput className="flex-1" onGuestsChange={handleGuestChange} />
         </form>
 
         {/* SUM */}
@@ -806,11 +851,16 @@ const ListingStayDetailPage: FC<ListingStayDetailPageProps> = ({ card }) => {
               </div>
             </div>
             <div>
-              <h2 className="ml-6 mt-2 text-lg font-medium">Portion {index + 1}</h2>
+              <h2 className="ml-6 mt-2 text-lg font-medium">
+                Portion {index + 1}
+              </h2>
             </div>
             <div className=" h-0.5 w-12 bg-slate-600 rounded-xl ml-4 mt-4"></div>
             <div>
-                <h2 className="text-xl font-bold ml-4 mt-4"> € {page8.basePrice[index]} /night</h2>
+              <h2 className="text-xl font-bold ml-4 mt-4">
+                {" "}
+                € {page8.basePrice[index]} /night
+              </h2>
             </div>
           </div>
         ))}
@@ -818,52 +868,283 @@ const ListingStayDetailPage: FC<ListingStayDetailPageProps> = ({ card }) => {
     );
   };
 
+  const [allImages, setAllImages] = useState<string[]>(() => {
+    const propertyCoverFileUrl = localStorage.getItem("propertyCoverFileUrl");
+    const portionCoverFileUrls = JSON.parse(
+      localStorage.getItem("portionCoverFileUrls") || ""
+    );
+    const propertyPictureUrls = JSON.parse(
+      localStorage.getItem("propertyPictureUrls") || ""
+    );
+    const portionPictureUrls = JSON.parse(
+      localStorage.getItem("portionPictureUrls") || ""
+    );
+    const allImagesArray = [
+      propertyCoverFileUrl,
+      portionCoverFileUrls,
+      propertyPictureUrls,
+      portionPictureUrls,
+    ];
+    const arr = allImagesArray
+      .flat(Infinity)
+      .filter((item) => item !== null && item !== "");
+    return arr;
+  });
+
+  const allImagesParam: string = searchParams.get("allImages") || "";
+  const imageCarousel = () => {
+    return (
+      <Carousel>
+        {allImages
+          .filter((_, i) => i >= 1)
+          .map((item, index) => (
+            <div key={index}>
+              <img src={item} alt="" className="w-16 h-80 rounded-xl" />
+            </div>
+          ))}
+      </Carousel>
+    );
+  };
+
+  const [modalIsOpen, setModalIsOpen] = useState<boolean>(false);
+  const customStyles = {
+    content: {
+      top: "50%",
+      left: "50%",
+      right: "auto",
+      bottom: "auto",
+      marginRight: "-50%",
+      transform: "translate(-50%, -50%)",
+    },
+  };
+
+  const modalImages = () => {
+    return (
+      // <Transition appear show={modalIsOpen} as={Fragment}>
+      //   <Dialog
+      //     as="div"
+      //     className="fixed inset-0 z-50 overflow-y-hidden"
+      //     onClose={() => setModalIsOpen(false)}
+      //   >
+      //     <div className="min-h-screen px-4 text-center">
+      //       <Transition.Child
+      //         as={Fragment}
+      //         enter="ease-out duration-300"
+      //         enterFrom="opacity-0"
+      //         enterTo="opacity-100"
+      //         leave="ease-in duration-200"
+      //         leaveFrom="opacity-100"
+      //         leaveTo="opacity-0"
+      //       >
+      //         <Dialog.Overlay className="fixed inset-0 bg-black bg-opacity-40" />
+      //       </Transition.Child>
+
+      //       {/* This element is to trick the browser into centering the modal contents. */}
+      //       <span
+      //         className="inline-block h-screen align-middle"
+      //         aria-hidden="true"
+      //       >
+      //         &#8203;
+      //       </span>
+      //       <Transition.Child
+      //         as={Fragment}
+      //         enter="ease-out duration-300"
+      //         enterFrom="opacity-0 scale-95"
+      //         enterTo="opacity-100 scale-100"
+      //         leave="ease-in duration-200"
+      //         leaveFrom="opacity-100 scale-100"
+      //         leaveTo="opacity-0 scale-95"
+      //       >
+      //         <div className="inline-block py-8 h-screen w-full max-w-4xl">
+      //           <div className="inline-flex pb-2 flex-col w-full text-left align-middle transition-all transform overflow-hidden rounded-2xl bg-white dark:bg-neutral-900 dark:border dark:border-neutral-700 dark:text-neutral-100 shadow-xl h-full">
+      //             <div className="relative flex-shrink-0 px-6 py-4 border-b border-neutral-200 dark:border-neutral-800 text-center">
+      //               <h3
+      //                 className="text-lg font-medium leading-6 text-gray-900"
+      //                 id="headlessui-dialog-title-70"
+      //               >
+      //                 Images
+      //               </h3>
+      //               <span className="absolute left-3 top-3">
+      //                 <ButtonClose onClick={() => setModalIsOpen(false)} />
+      //               </span>
+      //             </div>
+      //             <div className="px-8 overflow-auto text-neutral-700 dark:text-neutral-300 divide-y divide-neutral-200">
+      //               {imageCarousel()}
+      //             </div>
+      //           </div>
+      //         </div>
+      //       </Transition.Child>
+      //     </div>
+      //   </Dialog>
+      // </Transition>
+
+      <Transition appear show={modalIsOpen} as={Fragment}>
+        <Dialog
+          as="div"
+          className="fixed inset-0 z-50 overflow-y-hidden"
+          onClose={() => setModalIsOpen(false)}
+        >
+          <div className="min-h-screen px-4 text-center">
+            <Transition.Child
+              as={Fragment}
+              enter="ease-out duration-300"
+              enterFrom="opacity-0"
+              enterTo="opacity-100"
+              leave="ease-in duration-200"
+              leaveFrom="opacity-100"
+              leaveTo="opacity-0"
+            >
+              <Dialog.Overlay className="fixed inset-0 bg-black bg-opacity-40" />
+            </Transition.Child>
+
+            {/* This element is to trick the browser into centering the modal contents. */}
+            <span
+              className="inline-block h-screen align-middle"
+              aria-hidden="true"
+            >
+              &#8203;
+            </span>
+            <Transition.Child
+              as={Fragment}
+              enter="ease-out duration-300"
+              enterFrom="opacity-0 scale-95"
+              enterTo="opacity-100 scale-100"
+              leave="ease-in duration-200"
+              leaveFrom="opacity-100 scale-100"
+              leaveTo="opacity-0 scale-95"
+            >
+              <div className="fixed inset-0 flex items-center justify-center">
+                <div className="w-full h-full bg-white dark:bg-neutral-900 dark:border dark:border-neutral-700 dark:text-neutral-100 shadow-xl rounded-2xl overflow-hidden">
+                  <div className="relative flex-shrink-0 px-6 py-4 border-b border-neutral-200 dark:border-neutral-800 text-center">
+                    <h3
+                      className="text-lg font-medium leading-6 text-gray-900"
+                      id="headlessui-dialog-title-70"
+                    >
+                      Images
+                    </h3>
+                    <span className="absolute left-3 top-3">
+                      <ButtonClose onClick={() => setModalIsOpen(false)} />
+                    </span>
+                  </div>
+                  {/* <div className="flex flex-wrap gap-4 border border-white px-8 overflow-auto text-neutral-700 dark:text-neutral-300 divide-y divide-neutral-200 h-full"> */}
+                  <div className="flex flex-wrap gap-4">
+                    {allImages
+                      .filter((_, i) => i >= 1 && i < 1212) // Assuming this is to limit the number of images displayed
+                      .map((item, index) => (
+                        <div
+                          key={index}
+                          className="flex items-center py-2.5 sm:py-4 lg:py-5 space-x-5 lg:space-x-8"
+                        >
+                          <div className="border-2 border-yellow-500">
+                            <img
+                              src={item}
+                              alt=""
+                              className="w-full h-auto sm:w-64 md:w-1/3 lg:w-1/4 xl:w-1/5 object-cover"
+                            />
+                          </div>
+                        </div>
+                      ))}
+                  </div>
+                </div>
+              </div>
+            </Transition.Child>
+          </div>
+        </Dialog>
+      </Transition>
+
+      //   <Transition appear show={isOpenModalAmenities} as={Fragment}>
+      //   <Dialog
+      //     as="div"
+      //     className="fixed inset-0 z-50 overflow-y-auto"
+      //     onClose={closeModalAmenities}
+      //   >
+      //     <div className="min-h-screen px-4 text-center">
+      //       <Transition.Child
+      //         as={Fragment}
+      //         enter="ease-out duration-300"
+      //         enterFrom="opacity-0"
+      //         enterTo="opacity-100"
+      //         leave="ease-in duration-200"
+      //         leaveFrom="opacity-100"
+      //         leaveTo="opacity-0"
+      //       >
+      //         <Dialog.Overlay className="fixed inset-0 bg-black bg-opacity-40" />
+      //       </Transition.Child>
+
+      //       {/* This element is to trick the browser into centering the modal contents. */}
+      //       <span
+      //         className="inline-block h-screen align-middle"
+      //         aria-hidden="true"
+      //       >
+      //         &#8203;
+      //       </span>
+      //       <Transition.Child
+      //         as={Fragment}
+      //         enter="ease-out duration-300"
+      //         enterFrom="opacity-0 scale-95"
+      //         enterTo="opacity-100 scale-100"
+      //         leave="ease-in duration-200"
+      //         leaveFrom="opacity-100 scale-100"
+      //         leaveTo="opacity-0 scale-95"
+      //       >
+      //         <div className="inline-block py-8 h-screen w-full max-w-4xl">
+      //           <div className="inline-flex pb-2 flex-col w-full text-left align-middle transition-all transform overflow-hidden rounded-2xl bg-white dark:bg-neutral-900 dark:border dark:border-neutral-700 dark:text-neutral-100 shadow-xl h-full">
+      //             <div className="relative flex-shrink-0 px-6 py-4 border-b border-neutral-200 dark:border-neutral-800 text-center">
+      //               <h3
+      //                 className="text-lg font-medium leading-6 text-gray-900"
+      //                 id="headlessui-dialog-title-70"
+      //               >
+      //                 Images
+      //               </h3>
+      //               <span className="absolute left-3 top-3">
+      //                 <ButtonClose onClick={closeModalAmenities} />
+      //               </span>
+      //             </div>
+      //             <div className="px-8 overflow-auto text-neutral-700 dark:text-neutral-300 divide-y divide-neutral-200">
+      //               {allImages.filter((_, i) =>  i>=1 && i < 1212).map((item, index) => (
+      //                 <div
+      //                   key={index}
+      //                   className="flex items-center py-2.5 sm:py-4 lg:py-5 space-x-5 lg:space-x-8"
+      //                 >
+      //                   <i
+      //                     className={`text-4xl text-neutral-6000 las ${item.icon}`}
+      //                   ></i>
+      //                   <span>{item.name}</span>
+      //                 </div>
+      //               ))}
+      //             </div>
+      //           </div>
+      //         </div>
+      //       </Transition.Child>
+      //     </div>
+      //   </Dialog>
+      // </Transition>
+    );
+  };
+
   return (
     <div className="nc-ListingStayDetailPage">
       {/*  HEADER */}
-      <header className="rounded-md sm:rounded-xl">
+
+      <header className="rounded-md sm:rounded-xl h-[60%]">
         <div className="relative grid grid-cols-3 sm:grid-cols-4 gap-1 sm:gap-2">
-          <div
-            className="col-span-2 row-span-3 sm:row-span-2 relative rounded-md sm:rounded-xl overflow-hidden cursor-pointer"
-            onClick={handleOpenModalImageGallery}
-          >
-            <Image
-              fill
-              className="object-cover rounded-md sm:rounded-xl"
-              src={PHOTOS[0]}
-              alt=""
-              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 50vw"
-            />
-            <div className="absolute inset-0 bg-neutral-900 bg-opacity-20 opacity-0 hover:opacity-100 transition-opacity"></div>
+          <div className="col-span-2 row-span-3 sm:row-span-2 relative rounded-md sm:rounded-xl overflow-hidden cursor-pointer">
+            <img src={allImages[0]} alt="" />
           </div>
-          {PHOTOS.filter((_, i) => i >= 1 && i < 5).map((item, index) => (
-            <div
-              key={index}
-              className={`relative rounded-md sm:rounded-xl overflow-hidden ${
-                index >= 3 ? "hidden sm:block" : ""
-              }`}
-            >
+          {allImages
+            .filter((_, i) => i >= 1 && i < 5)
+            .map((item, index) => (
               <div className="aspect-w-4 aspect-h-3 sm:aspect-w-6 sm:aspect-h-5">
-                <Image
-                  fill
-                  className="object-cover rounded-md sm:rounded-xl "
-                  src={item || ""}
+                <img
+                  src={allImages[index]}
                   alt=""
-                  sizes="400px"
+                  className="object-contain rounded-md sm:rounded-xl "
                 />
               </div>
-
-              {/* OVERLAY */}
-              <div
-                className="absolute inset-0 bg-neutral-900 bg-opacity-20 opacity-0 hover:opacity-100 transition-opacity cursor-pointer"
-                onClick={handleOpenModalImageGallery}
-              />
-            </div>
-          ))}
-
+            ))}
           <button
             className="absolute hidden md:flex md:items-center md:justify-center left-3 bottom-3 px-4 py-2 rounded-xl bg-neutral-100 text-neutral-500 hover:bg-neutral-200 z-10"
-            onClick={handleOpenModalImageGallery}
+            onClick={() => setModalIsOpen(true)}
           >
             <Squares2X2Icon className="w-5 h-5" />
             <span className="ml-2 text-neutral-800 text-sm font-medium">
@@ -872,6 +1153,8 @@ const ListingStayDetailPage: FC<ListingStayDetailPageProps> = ({ card }) => {
           </button>
         </div>
       </header>
+
+      {modalIsOpen ? modalImages() : ""}
 
       {/* MAIN */}
       <main className=" relative z-10 mt-11 flex flex-col lg:flex-row ">
@@ -882,9 +1165,9 @@ const ListingStayDetailPage: FC<ListingStayDetailPageProps> = ({ card }) => {
           {renderSection3()}
           {renderSection4()}
           <SectionDateRange />
-          {renderPortionCards()}
+          {checkPortion > 0 && renderPortionCards()}
           {renderSection5()}
-          {renderSection6()}
+          {/* {renderSection6()} */}
           {renderSection7()}
           {renderSection8()}
         </div>

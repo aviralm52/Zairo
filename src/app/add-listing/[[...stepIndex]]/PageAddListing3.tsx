@@ -137,7 +137,7 @@ const PageAddListing3: FC<PageAddListing3Props> = () => {
           key={index}
           className=" flex flex-col border border-white p-1 rounded-3xl shadow-lg p-2 pb-4"
         >
-          <h2 className="text-md font-semibold ml-2 mt-2">Name of Portion {index + 1}</h2>
+          <h2 className="text-md font-semibold ml-2 mt-2">Name of {myArray.length > 1 ? `Portion ${index + 1}` : `Property`} </h2>
           <input
             type="text"
             className=" bg-transparent w-5/6 mx-auto my-2 rounded-2xl text-sm"

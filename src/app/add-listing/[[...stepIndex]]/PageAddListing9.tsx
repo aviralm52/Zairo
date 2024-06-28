@@ -8,63 +8,14 @@ import DatePicker from "react-datepicker";
 
 export interface PageAddListing9Props {}
 
-interface ListingData {
-  id: string;
-  authorId: number;
-  date: string;
-  href: string;
-  listingCategoryId: number;
-  title: string;
-  featuredImage: string;
-  galleryImgs: string[];
-  commentCount: number;
-  viewCount: number;
-  like: boolean;
-  address: string;
-  reviewStart: number;
-  reviewCount: number;
-  price: string;
-  maxGuests: number;
-  bedrooms: number;
-  bathrooms: number;
-  saleOff: string | null;
-  isAds: string | null;
-  map: {
-    lat: number;
-    lng: number;
-  };
+interface Page9State {
+  night: number[];
+  time: number[];
+  datesPerPortion: number[][];
 }
 
-const initialListingData: ListingData = {
-  id: "id1",
-  authorId: 10,
-  date: "May 20, 2021",
-  href: "/listing-stay-detail",
-  listingCategoryId: 17,
-  title: "Best Western Cedars Hotel ",
-  featuredImage: "https://res.cloudinary.com/dkfwmyr2k/image/upload/v1719236707/Cover_Image/eogjs7s55ge7uzwjlrzk.jpg",
-  galleryImgs: [
-    "https://images.pexels.com/photos/1268871/pexels-photo-1268871.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500",
-    "https://images.pexels.com/photos/1179156/pexels-photo-1179156.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500",
-    "https://images.pexels.com/photos/2506988/pexels-photo-2506988.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500",
-    "https://images.pexels.com/photos/2373201/pexels-photo-2373201.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500"
-  ],
-  commentCount: 70,
-  viewCount: 602,
-  like: false,
-  address: "1 Anzinger Court",
-  reviewStart: 4.8,
-  reviewCount: 28,
-  price: "$26",
-  maxGuests: 6,
-  bedrooms: 10,
-  bathrooms: 3,
-  saleOff: "-10% today",
-  isAds: null,
-  map: { lat: 55.2094559, lng: 61.5594641 }
-};
-
 const PageAddListing9: FC<PageAddListing9Props> = () => {
+
   let portions = 0;
   const data = localStorage.getItem("page1") || "";
   if (data) {
@@ -76,37 +27,48 @@ const PageAddListing9: FC<PageAddListing9Props> = () => {
 
   const [myArray, setMyArray] = useState<number[]>(Array(portions).fill(1));
 
-  //TODO: update listing data
-  const [listingData, setListingData] = useState<ListingData>(() => {
-    const savedData = localStorage.getItem("listingData");
-    return savedData ? JSON.parse(savedData) : initialListingData;
+  const [datesPerPortion, setDatesPerPortion] = useState<number[][]>(() => {
+    const savedPage = localStorage.getItem("page9");
+    if (!savedPage){
+      return Array.from({ length: portions }, () => []);
+    }
+    const value = JSON.parse(savedPage)["datesPerPortion"];
+    return value || Array.from({ length: portions }, () => []);
   });
+
+  const [night, setNight] = useState<number[]>(() => {
+    const savedPage = localStorage.getItem("page9") || "";
+    if (!savedPage){
+      return [1, 99];
+    }
+    const value = JSON.parse(savedPage)["night"];
+    return value || [1, 99];
+  });
+
+  const [time, setTime] = useState<number[]>(() => {
+    const savedPage = localStorage.getItem("page9") || "";
+    if (!savedPage){
+      return [10, 12];
+    }
+    const value = JSON.parse(savedPage)["time"];
+    return value || [10, 12];
+  });
+
+  const [page9, setPage9] = useState<Page9State>({
+    night: night,
+    time: time,
+    datesPerPortion: datesPerPortion,
+  })
 
   useEffect(() => {
-    localStorage.setItem("listingData", JSON.stringify(listingData));
-  }, [listingData]);
-
-   const updateListingData = (newData: Partial<ListingData>) => {
-    setListingData((prevData) => ({
-      ...prevData,
-      ...newData,
-    }));
-  };
-
-
-  const [datesPerPortion, setDatesPerPortion] = useState<number[][]>(() => {
-    const savedDates = localStorage.getItem("page9");
-    return savedDates
-      ? JSON.parse(savedDates)
-      : Array.from({ length: portions }, () => []);
-  });
-
-  const [night, setNight] = useState<number[]> (() => {
-    const nights = localStorage.getItem("nights");
-    return nights
-      ? JSON.parse(nights)
-      : [1, 99  ];
-  })
+    const newPage9: Page9State = {
+      night: night,
+      time: time,
+      datesPerPortion: datesPerPortion,
+    };
+    setPage9(newPage9);
+    localStorage.setItem("page9", JSON.stringify(newPage9));
+  }, [night, time, datesPerPortion]);
 
   const handleDateChange = (date: Date | null, portionIndex: number) => {
     if (!date) {
@@ -124,19 +86,12 @@ const PageAddListing9: FC<PageAddListing9Props> = () => {
       return updatedDates;
     });
   };
-  
-  
+
   const getAllSelectedDates = () => {
     return datesPerPortion.flat();
   };
 
-  
-  useEffect(() => {
-    localStorage.setItem("nights", JSON.stringify(night));
-    localStorage.setItem("page9", JSON.stringify(datesPerPortion));
-  }, [datesPerPortion, night]);
-
-    console.trace()
+  console.trace();
 
   return (
     <>
@@ -151,8 +106,27 @@ const PageAddListing9: FC<PageAddListing9Props> = () => {
       {/* FORM */}
       <div className="space-y-7">
         {/* ITEM */}
-        <NcInputNumber label="Nights min" defaultValue={night[0]} onChange={(value) => setNight([value, night[1]])}/>
-        <NcInputNumber label="Nights max" defaultValue={night[1]} onChange={(value) => setNight([night[0], value])}/>
+        <NcInputNumber
+          label="Nights min"
+          defaultValue={night[0]}
+          onChange={(value) => setNight([value, night[1]])}
+        />
+        <NcInputNumber
+          label="Nights max"
+          defaultValue={night[1]}
+          onChange={(value) => setNight([night[0], value])}
+        />
+      </div>
+
+      <div>
+        <div className="flex justify-between rounded-md items-center">
+          <label htmlFor="">Check-in Time</label>
+          <input type="number" className=" bg-transparent rounded-2xl w-32 text-center" value={time[0]} onChange={(e) => setTime([parseInt(e.target.value), time[1]])} />
+        </div>
+        <div className="flex justify-between rounded-md items-center mt-2">
+          <label htmlFor="">Check-out Time</label>
+          <input type="number" className=" bg-transparent rounded-2xl w-32 text-center" value={time[1]} onChange={(e) => setTime([time[0], parseInt(e.target.value)])}/>
+        </div>
       </div>
 
       {/*  */}
@@ -174,7 +148,9 @@ const PageAddListing9: FC<PageAddListing9Props> = () => {
               monthsShown={2}
               showPopperArrow={false}
               // excludeDates={getAllSelectedDates().map((item) => new Date(item))}
-              excludeDates={datesPerPortion[index].map((item) => new Date(item))}
+              excludeDates={datesPerPortion[index].map(
+                (item) => new Date(item)
+              )}
               inline
               renderCustomHeader={(p) => (
                 <DatePickerCustomHeaderTwoMonth {...p} />

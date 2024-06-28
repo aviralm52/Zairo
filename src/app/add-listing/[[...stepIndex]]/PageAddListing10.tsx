@@ -38,6 +38,25 @@ interface ListingData {
   };
 }
 
+interface Page3State {
+  portionName: string[];
+  portionSize: number[];
+  guests: number[];
+  bedrooms: number[];
+  beds: number[];
+  bathroom: number[];
+  kitchen: number[];
+}
+
+interface Page2State {
+  country: string;
+  street: string;
+  roomNumber: string;
+  city: string;
+  state: string;
+  postalCode: string;
+}
+
 interface publishPageState {
   id: string;
   saleOff: string;
@@ -73,6 +92,36 @@ const PageAddListing10: FC<PageAddListing10Props> = () => {
         };
   });
 
+  const [propertyCoverFileUrl, setPropertyCoverFileUrl] = useState<string>(() => {
+    const savedPage = localStorage.getItem("propertyCoverFileUrl") || "";
+    return savedPage || "";
+  });
+
+  const [page3, setPage3] = useState<Page3State>(() => {
+    const savedPage = localStorage.getItem("page3") || "";
+    if (savedPage) {
+      return JSON.parse(savedPage);
+    }
+    return "";
+  });
+
+  const [page2, setPage2] = useState<Page2State>(() => {
+    const savedPage = localStorage.getItem("page2") || "";
+    if (savedPage) {
+      return JSON.parse(savedPage);
+    }
+    return "";
+  }); 
+
+  const [basePrice, setBasePrice] = useState<number> (() => {
+    const saved = localStorage.getItem('page8');
+    if (!saved){
+      return 0;
+    }
+    const value = JSON.parse(saved);
+    return parseInt(value.basePrice[0]) || 0;
+  })
+
   return (
     <>
       <div>
@@ -85,35 +134,39 @@ const PageAddListing10: FC<PageAddListing10Props> = () => {
       <div className="w-14 border-b border-neutral-200 dark:border-neutral-700"></div>
       {/* FORM */}
       <div>
-        <h3 className="text-lg font-semibold">This is your listing</h3>
-        <div className="max-w-xs">
+        <h3 className="text-lg font-semibold mb-4">This is your listing</h3>
+        {/* <div className="max-w-xs">
           <StayCard
             className="mt-8"
             data={{ ...DEMO_STAY_LISTINGS[0], reviewStart: 0 }}
           />
-        </div>
+        </div> */}
 
         <Link href={"/listing-stay-detail"}>
         <div
           className="card"
           style={{
-            width: "18rem",
+            width: "15rem",
             border: "1px solid gray",
             borderRadius: "10px",
-            height: "20rem",
+            height: "22rem",
           }}
         >
           <img
-            src={listingPage.featuredImage}
-            className="card-img-top h-60 w-96 rounded-xl"
+            src={propertyCoverFileUrl}
+            className="card-img-top h-56 w-96 rounded-xl"
             alt="..."
           />
           <div className="card-body mt-2 ml-2">
-            <h1 className="mt-2">{listingPage.title}</h1>
+            <h1 className="mt-2">{page3.portionName[0]}</h1>
           </div>
-          <div className="flex gap-2 ml-2 mt-2">
+          <div className="flex gap-2 ml-2 mt-2 items-center">
             <FaLocationDot />
-            <h6>{listingPage.address}</h6>
+            <h6>{page2.city}, {page2.country}</h6>
+          </div>
+          <hr className=" w-16 border-gray-600 boder-2 my-2"/>
+          <div className=" mt-1 font-medium text-xl ml-2">
+            € {basePrice ? basePrice : "--/--"} /night
           </div>
         </div>
         </Link>
@@ -127,14 +180,14 @@ const PageAddListing10: FC<PageAddListing10Props> = () => {
           <Link href={"/listing-stay-detail"}>
             <ButtonPrimary className="-p-4">
               <EyeIcon className="h-3 w-3 -ml-4" />
-              <span className="ml-3 text-sm -p-2 -ml-1 -mr-2">Preview</span>
+              <span className="ml-3 text-sm -p-2   -mr-2">Preview</span>
             </ButtonPrimary>
           </Link>
 
           <Link href={"/listing-stay-detail"}>
             <ButtonSecondary className="-p-4">
               <img src="https://img.icons8.com/?size=100&id=fJXFbcW0WrW9&format=png&color=000000" alt="" className="bg-green-400 w-4 h-4 -ml-4 ronded-xl" />
-              <span className="ml-3 text-sm -p-2 -ml-1 -mr-4">Go Live</span>
+              <span className="ml-3 text-sm -p-2 -mr-4">Go Live</span>
             </ButtonSecondary>
           </Link>
 

@@ -12,17 +12,47 @@ export interface GuestsInputProps {
   onGuestsChange?: (totalGuests: number) => void;
 }
 
-const GuestsInput: FC<GuestsInputProps> = ({ className = "flex-1", onGuestsChange}) => {
-  const [guestAdultsInputValue, setGuestAdultsInputValue] = useState(2);
-  const [guestChildrenInputValue, setGuestChildrenInputValue] = useState(1);
-  const [guestInfantsInputValue, setGuestInfantsInputValue] = useState(1);
+interface guestsState {
+  adults: number;
+  children: number;
+  infants: number;
+}
 
-  // const [totalPeople, setTotalPeople] = localStorage.getItem(() => {
-  //   const savedPage = localStorage.getItem('totalPeople') || "";
-  //   if (savedPage){
+const GuestsInput: FC<GuestsInputProps> = ({
+  className = "flex-1",
+  onGuestsChange,
+}) => {
 
-  //   }
-  // }) 
+  const [guestAdultsInputValue, setGuestAdultsInputValue] = useState<number>(
+    () => {
+      const savedPage = localStorage.getItem("guestsState") || "";
+      if (!savedPage) {
+        return 2;
+      }
+      const value = JSON.parse(savedPage)["adults"];
+      return value || 2;
+    }
+  );
+
+  const [guestChildrenInputValue, setGuestChildrenInputValue] = useState<number>(() => {
+      const savedPage = localStorage.getItem("guestsState") || "";
+      if (!savedPage) {
+        return 1;
+      }
+      const value = JSON.parse(savedPage)["children"];
+      return value || 1;
+    });
+
+  const [guestInfantsInputValue, setGuestInfantsInputValue] = useState<number>(
+    () => {
+      const savedPage = localStorage.getItem("guestsState") || "";
+      if (!savedPage) {
+        return 0;
+      }
+      const value = JSON.parse(savedPage)["infants"];
+      return value || 0;
+    }
+  );
 
   const handleChangeData = (value: number, type: keyof GuestsObject) => {
     let newValue = {
@@ -45,15 +75,23 @@ const GuestsInput: FC<GuestsInputProps> = ({ className = "flex-1", onGuestsChang
     updateTotalGuests(newValue);
   };
 
-
   const updateTotalGuests = (newValue: GuestsObject) => {
-    const totalGuests = newValue.guestChildren + newValue.guestAdults + newValue.guestInfants;
+    const totalGuests =
+      (newValue.guestChildren ? newValue.guestChildren : 0) +
+      (newValue.guestAdults ? newValue.guestAdults : 0) +
+      (newValue.guestInfants ? newValue.guestInfants : 0);
+
+    const newGuests : guestsState = {
+      adults: newValue.guestAdults || 0,
+      children: newValue.guestChildren || 0,
+      infants: newValue.guestInfants || 0,
+    };
+    localStorage.setItem("guestsState", JSON.stringify(newGuests));
+
     if (onGuestsChange) {
       onGuestsChange(totalGuests);
     }
   };
-
-
 
   useEffect(() => {
     updateTotalGuests({
@@ -63,12 +101,21 @@ const GuestsInput: FC<GuestsInputProps> = ({ className = "flex-1", onGuestsChang
     });
   }, []);
 
+  const guests = localStorage.getItem("totalGuests") || "";
+  const totalGuests = guests ? JSON.parse(guests) : 0;
 
-  const totalGuests =
-    guestChildrenInputValue + guestAdultsInputValue + guestInfantsInputValue;
-
-  const savedData = localStorage.getItem('totalGuests') || "";
-  // const savedTotal = JSON.parse(savedData);
+  const [allGuests, setAllGuests] = useState<guestsState>(() => {
+    const savedPage = localStorage.getItem("guestsState") || "";
+    if (!savedPage) {
+      return {
+        adults: 2,
+        children: 1,
+        infants: 0,
+      };
+    }
+    const value = JSON.parse(savedPage);
+    return value;
+  });
 
   return (
     <Popover className={`flex relative ${className}`}>
@@ -88,7 +135,7 @@ const GuestsInput: FC<GuestsInputProps> = ({ className = "flex-1", onGuestsChang
               <div className="flex-grow">
                 <span className="block xl:text-lg font-semibold">
                   {/* {totalGuests || ""} Guests */}
-                  {totalGuests || ""} Guests
+                  {(guestAdultsInputValue || 0) + (guestChildrenInputValue || 0) + (guestInfantsInputValue || 0) || ""} Guests
                 </span>
                 <span className="block mt-1 text-sm text-neutral-400 leading-none font-light">
                   {totalGuests ? "Guests" : "Add guests"}
@@ -150,6 +197,5 @@ const GuestsInput: FC<GuestsInputProps> = ({ className = "flex-1", onGuestsChang
     </Popover>
   );
 };
-
 
 export default GuestsInput;
