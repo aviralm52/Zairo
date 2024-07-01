@@ -15,7 +15,6 @@ interface Page9State {
 }
 
 const PageAddListing9: FC<PageAddListing9Props> = () => {
-
   let portions = 0;
   const data = localStorage.getItem("page1") || "";
   if (data) {
@@ -29,7 +28,7 @@ const PageAddListing9: FC<PageAddListing9Props> = () => {
 
   const [datesPerPortion, setDatesPerPortion] = useState<number[][]>(() => {
     const savedPage = localStorage.getItem("page9");
-    if (!savedPage){
+    if (!savedPage) {
       return Array.from({ length: portions }, () => []);
     }
     const value = JSON.parse(savedPage)["datesPerPortion"];
@@ -38,7 +37,7 @@ const PageAddListing9: FC<PageAddListing9Props> = () => {
 
   const [night, setNight] = useState<number[]>(() => {
     const savedPage = localStorage.getItem("page9") || "";
-    if (!savedPage){
+    if (!savedPage) {
       return [1, 99];
     }
     const value = JSON.parse(savedPage)["night"];
@@ -47,7 +46,7 @@ const PageAddListing9: FC<PageAddListing9Props> = () => {
 
   const [time, setTime] = useState<number[]>(() => {
     const savedPage = localStorage.getItem("page9") || "";
-    if (!savedPage){
+    if (!savedPage) {
       return [10, 12];
     }
     const value = JSON.parse(savedPage)["time"];
@@ -58,7 +57,7 @@ const PageAddListing9: FC<PageAddListing9Props> = () => {
     night: night,
     time: time,
     datesPerPortion: datesPerPortion,
-  })
+  });
 
   useEffect(() => {
     const newPage9: Page9State = {
@@ -77,9 +76,9 @@ const PageAddListing9: FC<PageAddListing9Props> = () => {
     const newTime = date.getTime();
     setDatesPerPortion((prevDates) => {
       const updatedDates = [...prevDates];
-      const index = updatedDates[portionIndex].indexOf(newTime);
+      const index = updatedDates[portionIndex]?.indexOf(newTime);
       if (index !== -1) {
-        updatedDates[portionIndex].splice(index, 1); // Remove the date if already selected
+        updatedDates[portionIndex]?.splice(index, 1); // Remove the date if already selected
       } else {
         updatedDates[portionIndex].push(newTime); // Add the date if not selected
       }
@@ -91,8 +90,7 @@ const PageAddListing9: FC<PageAddListing9Props> = () => {
     return datesPerPortion.flat();
   };
 
-  console.trace();
-
+  console.log("datesPerPortion: ", datesPerPortion);
   return (
     <>
       <div>
@@ -121,11 +119,21 @@ const PageAddListing9: FC<PageAddListing9Props> = () => {
       <div>
         <div className="flex justify-between rounded-md items-center">
           <label htmlFor="">Check-in Time</label>
-          <input type="number" className=" bg-transparent rounded-2xl w-32 text-center" value={time[0]} onChange={(e) => setTime([parseInt(e.target.value), time[1]])} />
+          <input
+            type="number"
+            className=" bg-transparent rounded-2xl w-32 text-center"
+            value={time[0]}
+            onChange={(e) => setTime([parseInt(e.target.value), time[1]])}
+          />
         </div>
         <div className="flex justify-between rounded-md items-center mt-2">
           <label htmlFor="">Check-out Time</label>
-          <input type="number" className=" bg-transparent rounded-2xl w-32 text-center" value={time[1]} onChange={(e) => setTime([time[0], parseInt(e.target.value)])}/>
+          <input
+            type="number"
+            className=" bg-transparent rounded-2xl w-32 text-center"
+            value={time[1]}
+            onChange={(e) => setTime([time[0], parseInt(e.target.value)])}
+          />
         </div>
       </div>
 
@@ -148,7 +156,7 @@ const PageAddListing9: FC<PageAddListing9Props> = () => {
               monthsShown={2}
               showPopperArrow={false}
               // excludeDates={getAllSelectedDates().map((item) => new Date(item))}
-              excludeDates={datesPerPortion[index].map(
+              excludeDates={datesPerPortion[index]?.map(
                 (item) => new Date(item)
               )}
               inline

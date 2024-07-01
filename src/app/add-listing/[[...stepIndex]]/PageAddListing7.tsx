@@ -165,6 +165,7 @@ const PageAddListing7: FC<PageAddListing7Props> = () => {
       formData
     );
     const customUrl = response.data.secure_url + `/index=${index}`;
+    console.log("response: ", response?.data.secure_url);
     setPortionCoverFileUrls((prevState) => {
       const newUrls = [...prevState];
       newUrls[index] = response?.data.secure_url;

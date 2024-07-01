@@ -10,6 +10,7 @@ import Input from "@/shared/Input";
 import Select from "@/shared/Select";
 import FormItem from "../FormItem";
 import axios from 'axios';
+import AutocompleteInput from "@/components/AutoCompleteInput";
 
 export interface PageAddListing2Props {}
 
@@ -107,7 +108,6 @@ const PageAddListing2: FC<PageAddListing2Props> = () => {
     localStorage.setItem("page2", JSON.stringify(newPage2));
   }, [country, street, roomNumber, city, state, postalCode]);
 
-
     const handleSearchLocation = async () => {
       const address = `${page2.postalCode}, ${page2.city}, ${page2.state}, ${page2.country}`;
       const response = await axios.get(
@@ -120,8 +120,15 @@ const PageAddListing2: FC<PageAddListing2Props> = () => {
     };  
 
 
+
+
+
+
   return (
     <>
+      <h1>Place Autocomplete</h1>
+      <AutocompleteInput />
+
       <h2 className="text-2xl font-semibold">Your place location</h2>
       <div className="w-14 border-b border-neutral-200 dark:border-neutral-700"></div>
       {/* FORM */}

@@ -9,12 +9,22 @@ import HeroSearchForm2MobileFactory from "../(HeroSearchForm2Mobile)/HeroSearchF
 import Link from "next/link";
 import TemplatesDropdown from "./TemplatesDropdown";
 import { Route } from "@/routers/types";
+import { useUser } from "@clerk/nextjs";
+import {
+  ClerkProvider,
+  SignInButton,
+  SignedIn,
+  SignedOut,
+  UserButton,
+} from "@clerk/nextjs";
 
 export interface MainNav2Props {
   className?: string;
 }
 
 const MainNav2: FC<MainNav2Props> = ({ className = "" }) => {
+  const { isSignedIn } = useUser();
+
   return (
     <div className={`MainNav2 relative z-10 ${className}`}>
       <div className="px-4 h-20 lg:container flex justify-between">
@@ -42,11 +52,10 @@ const MainNav2: FC<MainNav2Props> = ({ className = "" }) => {
             </Link>
 
             <NotifyDropdown />
-            <AvatarDropdown />
+            {isSignedIn ? <AvatarDropdown /> : <SignInButton className = " text-blue-500 font-medium text-xl "/>}
           </div>
           <div className="flex space-x-2 lg:hidden">
             <NotifyDropdown />
-            <AvatarDropdown />
             <MenuBar />
           </div>
         </div>

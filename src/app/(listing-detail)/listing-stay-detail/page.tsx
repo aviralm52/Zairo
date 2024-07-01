@@ -37,6 +37,9 @@ import { MdCancel } from "react-icons/md";
 import "react-responsive-carousel/lib/styles/carousel.min.css"; // requires a loader
 import { Carousel } from "react-responsive-carousel";
 import Modal from "react-modal";
+import { useAuth, useSignIn } from "@clerk/nextjs";
+import { useUser } from "@clerk/nextjs";
+import ProtectedRoute from "@/components/ProtectedRoute";
 
 export interface ListingStayDetailPageProps {
   card: {
@@ -69,14 +72,11 @@ interface DateRange {
 }
 
 const ListingStayDetailPage: FC<ListingStayDetailPageProps> = ({ card }) => {
-  //
-
-  // useEffect(() => {
-  //   Modal.setAppElement('#__next'); // Ensure this runs after the component mounts
-  // }, []);
+  const { userId } = useAuth();
+  const router = useRouter();
+  const { isSignedIn } = useUser();
 
   const thisPathname = usePathname();
-  const router = useRouter();
   const searchParams = useSearchParams();
 
   const param = searchParams.get("id") || 0;
@@ -162,7 +162,6 @@ const ListingStayDetailPage: FC<ListingStayDetailPageProps> = ({ card }) => {
       const value = JSON.parse(savedData);
       setPortionCoverFileUrls(value);
     }
-    console.log("selectedDates: ", selectedDates, portionCoverFileUrls);
   }, []);
 
   let [isOpenModalAmenities, setIsOpenModalAmenities] = useState(false);
@@ -827,7 +826,7 @@ const ListingStayDetailPage: FC<ListingStayDetailPageProps> = ({ card }) => {
                       ? portionCoverFileUrls[index]
                       : ""
                   }
-                  alt="No image"
+                  alt=""
                   className="fill w-56 h-48"
                 />
               </Link>
@@ -868,7 +867,32 @@ const ListingStayDetailPage: FC<ListingStayDetailPageProps> = ({ card }) => {
     );
   };
 
-  const [allImages, setAllImages] = useState<string[]>(() => {
+  // const [allImages, setAllImages] = useState<string[]>(() => {
+  //   const propertyCoverFileUrl = localStorage.getItem("propertyCoverFileUrl");
+  //   const portionCoverFileUrls = JSON.parse(
+  //     localStorage.getItem("portionCoverFileUrls") || ""
+  //   );
+  //   const propertyPictureUrls = JSON.parse(
+  //     localStorage.getItem("propertyPictureUrls") || ""
+  //   );
+  //   const portionPictureUrls = JSON.parse(
+  //     localStorage.getItem("portionPictureUrls") || ""
+  //   );
+  //   const allImagesArray = [
+  //     propertyCoverFileUrl,
+  //     portionCoverFileUrls,
+  //     propertyPictureUrls,
+  //     portionPictureUrls,
+  //   ];
+  //   const arr = allImagesArray
+  //     .flat(Infinity)
+  //     .filter((item) => item !== null && item !== "");
+  //   return arr;
+  // });
+
+  const [allImages, setAllImages] = useState<string[]>([]);
+
+  useEffect(() => {
     const propertyCoverFileUrl = localStorage.getItem("propertyCoverFileUrl");
     const portionCoverFileUrls = JSON.parse(
       localStorage.getItem("portionCoverFileUrls") || ""
@@ -888,8 +912,8 @@ const ListingStayDetailPage: FC<ListingStayDetailPageProps> = ({ card }) => {
     const arr = allImagesArray
       .flat(Infinity)
       .filter((item) => item !== null && item !== "");
-    return arr;
-  });
+    setAllImages(arr);
+  }, []);
 
   const allImagesParam: string = searchParams.get("allImages") || "";
   const imageCarousel = () => {
@@ -920,71 +944,13 @@ const ListingStayDetailPage: FC<ListingStayDetailPageProps> = ({ card }) => {
 
   const modalImages = () => {
     return (
-      // <Transition appear show={modalIsOpen} as={Fragment}>
-      //   <Dialog
-      //     as="div"
-      //     className="fixed inset-0 z-50 overflow-y-hidden"
-      //     onClose={() => setModalIsOpen(false)}
-      //   >
-      //     <div className="min-h-screen px-4 text-center">
-      //       <Transition.Child
-      //         as={Fragment}
-      //         enter="ease-out duration-300"
-      //         enterFrom="opacity-0"
-      //         enterTo="opacity-100"
-      //         leave="ease-in duration-200"
-      //         leaveFrom="opacity-100"
-      //         leaveTo="opacity-0"
-      //       >
-      //         <Dialog.Overlay className="fixed inset-0 bg-black bg-opacity-40" />
-      //       </Transition.Child>
-
-      //       {/* This element is to trick the browser into centering the modal contents. */}
-      //       <span
-      //         className="inline-block h-screen align-middle"
-      //         aria-hidden="true"
-      //       >
-      //         &#8203;
-      //       </span>
-      //       <Transition.Child
-      //         as={Fragment}
-      //         enter="ease-out duration-300"
-      //         enterFrom="opacity-0 scale-95"
-      //         enterTo="opacity-100 scale-100"
-      //         leave="ease-in duration-200"
-      //         leaveFrom="opacity-100 scale-100"
-      //         leaveTo="opacity-0 scale-95"
-      //       >
-      //         <div className="inline-block py-8 h-screen w-full max-w-4xl">
-      //           <div className="inline-flex pb-2 flex-col w-full text-left align-middle transition-all transform overflow-hidden rounded-2xl bg-white dark:bg-neutral-900 dark:border dark:border-neutral-700 dark:text-neutral-100 shadow-xl h-full">
-      //             <div className="relative flex-shrink-0 px-6 py-4 border-b border-neutral-200 dark:border-neutral-800 text-center">
-      //               <h3
-      //                 className="text-lg font-medium leading-6 text-gray-900"
-      //                 id="headlessui-dialog-title-70"
-      //               >
-      //                 Images
-      //               </h3>
-      //               <span className="absolute left-3 top-3">
-      //                 <ButtonClose onClick={() => setModalIsOpen(false)} />
-      //               </span>
-      //             </div>
-      //             <div className="px-8 overflow-auto text-neutral-700 dark:text-neutral-300 divide-y divide-neutral-200">
-      //               {imageCarousel()}
-      //             </div>
-      //           </div>
-      //         </div>
-      //       </Transition.Child>
-      //     </div>
-      //   </Dialog>
-      // </Transition>
-
       <Transition appear show={modalIsOpen} as={Fragment}>
         <Dialog
           as="div"
-          className="fixed inset-0 z-50 overflow-y-hidden"
+          className="fixed inset-0 z-50 overflow-y-auto"
           onClose={() => setModalIsOpen(false)}
         >
-          <div className="min-h-screen px-4 text-center">
+          <div className="min-h-screen px-4 text-center flex items-center justify-center">
             <Transition.Child
               as={Fragment}
               enter="ease-out duration-300"
@@ -997,7 +963,6 @@ const ListingStayDetailPage: FC<ListingStayDetailPageProps> = ({ card }) => {
               <Dialog.Overlay className="fixed inset-0 bg-black bg-opacity-40" />
             </Transition.Child>
 
-            {/* This element is to trick the browser into centering the modal contents. */}
             <span
               className="inline-block h-screen align-middle"
               aria-hidden="true"
@@ -1013,34 +978,35 @@ const ListingStayDetailPage: FC<ListingStayDetailPageProps> = ({ card }) => {
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-95"
             >
-              <div className="fixed inset-0 flex items-center justify-center">
-                <div className="w-full h-full bg-white dark:bg-neutral-900 dark:border dark:border-neutral-700 dark:text-neutral-100 shadow-xl rounded-2xl overflow-hidden">
-                  <div className="relative flex-shrink-0 px-6 py-4 border-b border-neutral-200 dark:border-neutral-800 text-center">
-                    <h3
-                      className="text-lg font-medium leading-6 text-gray-900"
-                      id="headlessui-dialog-title-70"
-                    >
-                      Images
-                    </h3>
-                    <span className="absolute left-3 top-3">
-                      <ButtonClose onClick={() => setModalIsOpen(false)} />
-                    </span>
-                  </div>
-                  {/* <div className="flex flex-wrap gap-4 border border-white px-8 overflow-auto text-neutral-700 dark:text-neutral-300 divide-y divide-neutral-200 h-full"> */}
-                  <div className="flex flex-wrap gap-4">
+              <div className="w-3/4 max-w-4xl h-4/5 bg-white dark:bg-neutral-900 dark:border dark:border-neutral-700 dark:text-neutral-100 shadow-xl rounded-2xl overflow-hidden flex flex-col">
+                <div className="relative flex-shrink-0 px-6 py-4 border-b border-neutral-200 dark:border-neutral-800 text-center">
+                  <h3
+                    className="text-lg font-medium leading-6 text-gray-900"
+                    id="headlessui-dialog-title-70"
+                  >
+                    Images
+                  </h3>
+                  <span className="absolute left-3 top-3">
+                    <ButtonClose onClick={() => setModalIsOpen(false)} />
+                  </span>
+                </div>
+                <div className="flex-grow overflow-auto px-8 py-4 text-neutral-700 dark:text-neutral-300">
+                  <div className="flex flex-wrap gap-4 justify-center lg:gap-12">
                     {allImages
                       .filter((_, i) => i >= 1 && i < 1212) // Assuming this is to limit the number of images displayed
                       .map((item, index) => (
                         <div
                           key={index}
-                          className="flex items-center py-2.5 sm:py-4 lg:py-5 space-x-5 lg:space-x-8"
+                          className="flex items-center py-2.5 space-x-5"
                         >
-                          <div className="border-2 border-yellow-500">
-                            <img
-                              src={item}
-                              alt=""
-                              className="w-full h-auto sm:w-64 md:w-1/3 lg:w-1/4 xl:w-1/5 object-cover"
-                            />
+                          <div className="rounded-xl border border-slate-700">
+                            <a href={item} target="_blank">
+                              <img
+                                src={item}
+                                alt=""
+                                className="w-64 h-64 rounded-xl lg:w-72 lg:h-72"
+                              />
+                            </a>
                           </div>
                         </div>
                       ))}
@@ -1051,133 +1017,73 @@ const ListingStayDetailPage: FC<ListingStayDetailPageProps> = ({ card }) => {
           </div>
         </Dialog>
       </Transition>
-
-      //   <Transition appear show={isOpenModalAmenities} as={Fragment}>
-      //   <Dialog
-      //     as="div"
-      //     className="fixed inset-0 z-50 overflow-y-auto"
-      //     onClose={closeModalAmenities}
-      //   >
-      //     <div className="min-h-screen px-4 text-center">
-      //       <Transition.Child
-      //         as={Fragment}
-      //         enter="ease-out duration-300"
-      //         enterFrom="opacity-0"
-      //         enterTo="opacity-100"
-      //         leave="ease-in duration-200"
-      //         leaveFrom="opacity-100"
-      //         leaveTo="opacity-0"
-      //       >
-      //         <Dialog.Overlay className="fixed inset-0 bg-black bg-opacity-40" />
-      //       </Transition.Child>
-
-      //       {/* This element is to trick the browser into centering the modal contents. */}
-      //       <span
-      //         className="inline-block h-screen align-middle"
-      //         aria-hidden="true"
-      //       >
-      //         &#8203;
-      //       </span>
-      //       <Transition.Child
-      //         as={Fragment}
-      //         enter="ease-out duration-300"
-      //         enterFrom="opacity-0 scale-95"
-      //         enterTo="opacity-100 scale-100"
-      //         leave="ease-in duration-200"
-      //         leaveFrom="opacity-100 scale-100"
-      //         leaveTo="opacity-0 scale-95"
-      //       >
-      //         <div className="inline-block py-8 h-screen w-full max-w-4xl">
-      //           <div className="inline-flex pb-2 flex-col w-full text-left align-middle transition-all transform overflow-hidden rounded-2xl bg-white dark:bg-neutral-900 dark:border dark:border-neutral-700 dark:text-neutral-100 shadow-xl h-full">
-      //             <div className="relative flex-shrink-0 px-6 py-4 border-b border-neutral-200 dark:border-neutral-800 text-center">
-      //               <h3
-      //                 className="text-lg font-medium leading-6 text-gray-900"
-      //                 id="headlessui-dialog-title-70"
-      //               >
-      //                 Images
-      //               </h3>
-      //               <span className="absolute left-3 top-3">
-      //                 <ButtonClose onClick={closeModalAmenities} />
-      //               </span>
-      //             </div>
-      //             <div className="px-8 overflow-auto text-neutral-700 dark:text-neutral-300 divide-y divide-neutral-200">
-      //               {allImages.filter((_, i) =>  i>=1 && i < 1212).map((item, index) => (
-      //                 <div
-      //                   key={index}
-      //                   className="flex items-center py-2.5 sm:py-4 lg:py-5 space-x-5 lg:space-x-8"
-      //                 >
-      //                   <i
-      //                     className={`text-4xl text-neutral-6000 las ${item.icon}`}
-      //                   ></i>
-      //                   <span>{item.name}</span>
-      //                 </div>
-      //               ))}
-      //             </div>
-      //           </div>
-      //         </div>
-      //       </Transition.Child>
-      //     </div>
-      //   </Dialog>
-      // </Transition>
     );
   };
 
   return (
-    <div className="nc-ListingStayDetailPage">
-      {/*  HEADER */}
+    <ProtectedRoute>
+      <div
+        className={`nc-ListingStayDetailPage ${modalIsOpen ? "blur-md" : ""}`}
+      >
+        {/*  HEADER */}
 
-      <header className="rounded-md sm:rounded-xl h-[60%]">
-        <div className="relative grid grid-cols-3 sm:grid-cols-4 gap-1 sm:gap-2">
-          <div className="col-span-2 row-span-3 sm:row-span-2 relative rounded-md sm:rounded-xl overflow-hidden cursor-pointer">
-            <img src={allImages[0]} alt="" />
+        <header className="rounded-md sm:rounded-xl h-[60%]">
+          <div className="relative grid grid-cols-3 sm:grid-cols-4 gap-1 sm:gap-2 ">
+            <div className="col-span-2 row-span-3 sm:row-span-2 relative rounded-md sm:rounded-xl overflow-hidden">
+              <img
+                src={allImages[0]}
+                alt=""
+                className=" object-cover w-full h-full"
+              />
+            </div>
+            {allImages
+              .filter((_, i) => i >= 1 && i < 5)
+              .map((item, index) => (
+                <div className="aspect-w-4 aspect-h-3 sm:aspect-w-6 sm:aspect-h-5 rounded-xl">
+                  <img
+                    src={allImages[index]}
+                    alt=""
+                    className="object-cover rounded-xl sm:rounded-xl w-44 h-44 "
+                  />
+                </div>
+              ))}
+            <button
+              className="absolute hidden md:flex md:items-center md:justify-center left-3 bottom-3 px-4 py-2 rounded-xl bg-neutral-100 text-neutral-500 hover:bg-neutral-200 z-10"
+              onClick={() => setModalIsOpen(true)}
+            >
+              <Squares2X2Icon className="w-5 h-5" />
+              <span className="ml-2 text-neutral-800 text-sm font-medium">
+                Show all photos
+              </span>
+            </button>
           </div>
-          {allImages
-            .filter((_, i) => i >= 1 && i < 5)
-            .map((item, index) => (
-              <div className="aspect-w-4 aspect-h-3 sm:aspect-w-6 sm:aspect-h-5">
-                <img
-                  src={allImages[index]}
-                  alt=""
-                  className="object-contain rounded-md sm:rounded-xl "
-                />
-              </div>
-            ))}
-          <button
-            className="absolute hidden md:flex md:items-center md:justify-center left-3 bottom-3 px-4 py-2 rounded-xl bg-neutral-100 text-neutral-500 hover:bg-neutral-200 z-10"
-            onClick={() => setModalIsOpen(true)}
-          >
-            <Squares2X2Icon className="w-5 h-5" />
-            <span className="ml-2 text-neutral-800 text-sm font-medium">
-              Show all photos
-            </span>
-          </button>
-        </div>
-      </header>
+        </header>
 
-      {modalIsOpen ? modalImages() : ""}
+        {modalIsOpen ? modalImages() : ""}
 
-      {/* MAIN */}
-      <main className=" relative z-10 mt-11 flex flex-col lg:flex-row ">
-        {/* CONTENT */}
-        <div className="w-full lg:w-3/5 xl:w-2/3 space-y-8 lg:space-y-10 lg:pr-10">
-          {renderSection1()}
-          {renderSection2()}
-          {renderSection3()}
-          {renderSection4()}
-          <SectionDateRange />
-          {checkPortion > 0 && renderPortionCards()}
-          {renderSection5()}
-          {/* {renderSection6()} */}
-          {renderSection7()}
-          {renderSection8()}
-        </div>
+        {/* MAIN */}
+        <main className=" relative z-10 mt-11 flex flex-col lg:flex-row ">
+          {/* CONTENT */}
+          <div className="w-full lg:w-3/5 xl:w-2/3 space-y-8 lg:space-y-10 lg:pr-10">
+            {renderSection1()}
+            {renderSection2()}
+            {renderSection3()}
+            {renderSection4()}
+            <SectionDateRange />
+            {checkPortion > 0 && renderPortionCards()}
+            {renderSection5()}
+            {/* {renderSection6()} */}
+            {renderSection7()}
+            {renderSection8()}
+          </div>
 
-        {/* SIDEBAR */}
-        <div className="hidden lg:block flex-grow mt-14 lg:mt-0">
-          <div className="sticky top-28">{renderSidebar()}</div>
-        </div>
-      </main>
-    </div>
+          {/* SIDEBAR */}
+          <div className="hidden lg:block flex-grow mt-14 lg:mt-0">
+            <div className="sticky top-28">{renderSidebar()}</div>
+          </div>
+        </main>
+      </div>
+    </ProtectedRoute>
   );
 };
 

@@ -5,7 +5,6 @@ import ButtonPrimary from "@/shared/ButtonPrimary";
 import ButtonSecondary from "@/shared/ButtonSecondary";
 import { Route } from "@/routers/types";
 
-
 export interface CommonLayoutProps {
   children: React.ReactNode;
   params: {
@@ -23,7 +22,6 @@ const CommonLayout: FC<CommonLayoutProps> = ({ children, params }) => {
   ) as Route;
   const nextBtnText = index > 9 ? "Publish listing" : "Continue";
 
-
   useEffect(() => {
     if (index === 9 && nextBtnText === "Publish listing") {
       // Get data from local storage
@@ -31,9 +29,11 @@ const CommonLayout: FC<CommonLayoutProps> = ({ children, params }) => {
       if (data) {
         // Convert data to JSON format
         const jsonData = JSON.parse(data);
-        
+
         // Create a new Blob object containing the JSON data
-        const blob = new Blob([JSON.stringify(jsonData, null, 2)], { type: "application/json" });
+        const blob = new Blob([JSON.stringify(jsonData, null, 2)], {
+          type: "application/json",
+        });
 
         // Create a link element to download the JSON file
         const url = URL.createObjectURL(blob);
@@ -49,7 +49,6 @@ const CommonLayout: FC<CommonLayoutProps> = ({ children, params }) => {
       }
     }
   }, [index, nextBtnText]);
-
 
   return (
     <>
@@ -70,8 +69,8 @@ const CommonLayout: FC<CommonLayoutProps> = ({ children, params }) => {
 
           {/* --------------------- */}
           {/* <div className="listingSection__wrap" style={{'border':'1px solid white', 'width': '80vw'}}>{children} */}
-          <div className="listingSection__wrap" style={{'border':'none'}}>{children}
-
+          <div className="listingSection__wrap" style={{ border: "none" }}>
+              {children}
           </div>
 
           {/* --------------------- */}
@@ -83,7 +82,7 @@ const CommonLayout: FC<CommonLayoutProps> = ({ children, params }) => {
           </div>
         </div>
       </div>
-    </>
+      </>
   );
 };
 

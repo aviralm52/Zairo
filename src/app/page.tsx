@@ -14,6 +14,8 @@ import SectionBecomeAnAuthor from "@/components/SectionBecomeAnAuthor";
 import SectionVideos from "@/components/SectionVideos";
 import SectionClientSay from "@/components/SectionClientSay";
 
+
+
 const DEMO_CATS: TaxonomyType[] = [
   {
     id: "1",
