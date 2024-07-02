@@ -74,7 +74,7 @@ const PageAddListing5: FC<PageAddListing5Props> = () => {
       cooking: page5.cooking,
       additionalRules: additionalRules
     }
-    setPage5(newPage5);
+    // setPage5(newPage5);
     localStorage.setItem("page5", JSON.stringify(newPage5));
   }, [page5, additionalRules]);
 
@@ -104,17 +104,6 @@ const PageAddListing5: FC<PageAddListing5Props> = () => {
       </div>
     );
   };
-
-  // const renderNoInclude = (text: string) => {
-  //   return (
-  //     <div className="flex items-center justify-between py-3">
-  //       <span className="text-neutral-6000 dark:text-neutral-400 font-medium">
-  //         {text}
-  //       </span>
-  //       <i className="text-2xl text-neutral-400 las la-times-circle hover:text-neutral-900 dark:hover:text-neutral-100 cursor-pointer"></i>
-  //     </div>
-  //   );
-  // };
 
   return (
     <>

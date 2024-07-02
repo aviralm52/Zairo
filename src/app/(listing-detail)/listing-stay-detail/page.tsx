@@ -1039,7 +1039,7 @@ const ListingStayDetailPage: FC<ListingStayDetailPageProps> = ({ card }) => {
             {allImages
               .filter((_, i) => i >= 1 && i < 5)
               .map((item, index) => (
-                <div className="aspect-w-4 aspect-h-3 sm:aspect-w-6 sm:aspect-h-5 rounded-xl">
+                <div className="aspect-w-4 aspect-h-3 sm:aspect-w-6 sm:aspect-h-5 rounded-xl" key={index}>
                   <img
                     src={allImages[index]}
                     alt=""

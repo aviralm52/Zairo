@@ -4,13 +4,16 @@ import { MapPinIcon } from "@heroicons/react/24/solid";
 import LocationMarker from "@/components/AnyReactComponent/LocationMarker";
 import Label from "@/components/Label";
 import GoogleMapReact from "google-map-react";
-import React, { FC, useEffect, useState } from "react";
+import React, { FC, useEffect, useRef, useState } from "react";
 import ButtonSecondary from "@/shared/ButtonSecondary";
 import Input from "@/shared/Input";
 import Select from "@/shared/Select";
 import FormItem from "../FormItem";
-import axios from 'axios';
+import axios from "axios";
 import AutocompleteInput from "@/components/AutoCompleteInput";
+import { useJsApiLoader } from "@react-google-maps/api";
+import { Library, Loader } from "@googlemaps/js-api-loader";
+import { P } from "@clerk/clerk-react/dist/controlComponents-CzpRUsyv";
 
 export interface PageAddListing2Props {}
 
@@ -24,7 +27,6 @@ interface Page2State {
 }
 
 const PageAddListing2: FC<PageAddListing2Props> = () => {
-
   const [country, setCountry] = useState<string>(() => {
     const savedPage = localStorage.getItem("page2") || "";
     if (!savedPage) {
@@ -78,7 +80,6 @@ const PageAddListing2: FC<PageAddListing2Props> = () => {
     const value = JSON.parse(savedPage)["postalCode"];
     return value || "";
   });
-  
 
   const [page2, setPage2] = useState<Page2State>({
     country: country,
@@ -94,7 +95,6 @@ const PageAddListing2: FC<PageAddListing2Props> = () => {
     lng: 36.2172614,
   });
 
-
   useEffect(() => {
     const newPage2: Page2State = {
       country: country,
@@ -103,31 +103,74 @@ const PageAddListing2: FC<PageAddListing2Props> = () => {
       city: city,
       state: state,
       postalCode: postalCode,
-    }
+    };
     setPage2(newPage2);
     localStorage.setItem("page2", JSON.stringify(newPage2));
   }, [country, street, roomNumber, city, state, postalCode]);
 
-    const handleSearchLocation = async () => {
-      const address = `${page2.postalCode}, ${page2.city}, ${page2.state}, ${page2.country}`;
-      const response = await axios.get(
-        `https://maps.googleapis.com/maps/api/geocode/json?address=${address}&key=YOUR_GEOCODING_API_KEY`
+  const handleSearchLocation = async () => {
+    const address = `${page2.postalCode}, ${page2.city}, ${page2.state}, ${page2.country}`;
+    const response = await axios.get(
+      `https://maps.googleapis.com/maps/api/geocode/json?address=${address}&key=YOUR_GEOCODING_API_KEY`
+    );
+    if (response.data.results.length > 0) {
+      const { lat, lng } = response.data.results[0].geometry.location;
+      setCenter({ lat, lng });
+    }
+  };
+
+  const handleLocation = async () => {
+    console.log("handleLocation");
+    await fetch("https://autocomplete.search.hereapi.com/v1/autocomplete").then(
+      (response) => console.log("fetched: ", response.json())
+    );
+  };
+
+  const libs: Library[] = ["core", "maps", "places", "marker"];
+  const [map, setMap] = useState<google.maps.Map | null>(null);
+  const [autoComplete, setAutoComplete] =
+    useState<google.maps.places.Autocomplete | null>(null);
+  const { isLoaded } = useJsApiLoader({
+    // googleMapsApiKey: process.env.NEXT_PUBLIC_MAPS_API_KEY || "",
+    googleMapsApiKey: "AIzaSyAaskQPUlQLG290XRBIGYmp9OGEbPCEdSQ",
+    libraries: libs,
+  });
+  const mapRef = useRef<HTMLDivElement>(null);
+  const placeAutoCompleteRef = useRef<HTMLInputElement>(null);
+  useEffect(() => {
+    if (isLoaded) {
+      const mapOptions = {
+        center: {
+          lat: center.lat,
+          lng: center.lng,
+          // lat: '10.531020008464978',
+          // long: '9.298553466796875'
+        },
+        zoom: 17,
+        mapId: "MY-MAP-1234",
+      };
+
+      //setup the map
+      const gMap = new google.maps.Map(
+        mapRef.current as HTMLDivElement,
+        mapOptions
       );
-      if (response.data.results.length > 0) {
-        const { lat, lng } = response.data.results[0].geometry.location;
-        setCenter({ lat, lng });
-      }
-    };  
+      setMap(gMap);
 
-
-
-
-
+      //setup the autocomplete
+      const gAutoComplete = new google.maps.places.Autocomplete(
+        placeAutoCompleteRef.current as HTMLInputElement
+      );
+      setAutoComplete(gAutoComplete);
+    }
+  }, [isLoaded]);
 
   return (
     <>
-      <h1>Place Autocomplete</h1>
-      <AutocompleteInput />
+      <Input ref={placeAutoCompleteRef} />
+      <h2>this </h2>
+      {/* <h1>Place Autocomplete</h1> */}
+      {/* <AutocompleteInput /> */}
 
       <h2 className="text-2xl font-semibold">Your place location</h2>
       <div className="w-14 border-b border-neutral-200 dark:border-neutral-700"></div>
@@ -150,21 +193,54 @@ const PageAddListing2: FC<PageAddListing2Props> = () => {
           </Select>
         </FormItem>
         <FormItem label="Street">
-          <Input placeholder="..." value={street} onChange={(e) => {setStreet(e.target.value); handleSearchLocation()}}/>
+          <Input
+            placeholder="..."
+            value={street}
+            onChange={(e) => {
+              setStreet(e.target.value);
+              handleSearchLocation();
+            }}
+          />
         </FormItem>
         <FormItem label="Room number (optional)">
-          <Input value={roomNumber} onChange={(e) => {setRoomNumber(e.target.value); handleSearchLocation()}}/>
+          <Input
+            value={roomNumber}
+            onChange={(e) => {
+              setRoomNumber(e.target.value);
+              handleSearchLocation();
+            }}
+          />
         </FormItem>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-5">
           <FormItem label="City">
-            <Input value={city} onChange={(e) => {setCity(e.target.value); handleSearchLocation()}}/>
+            <Input
+              value={city}
+              onChange={(e) => {
+                setCity(e.target.value);
+                handleSearchLocation();
+              }}
+            />
           </FormItem>
           <FormItem label="State">
-            <Input value={state} onChange={(e) => {setState(e.target.value); handleSearchLocation()}}/>
+            <Input
+              value={state}
+              onChange={(e) => {
+                setState(e.target.value);
+                handleSearchLocation();
+              }}
+            />
           </FormItem>
           <FormItem label="Postal code">
-            <Input value={postalCode} onChange={(e) => {setPostalCode(e.target.value); handleSearchLocation()}}/>
+            <Input
+              value={postalCode}
+              onChange={(e) => {
+                setPostalCode(e.target.value);
+                handleSearchLocation();
+              }}
+            />
           </FormItem>
+          {/* <label htmlFor="">Location Details</label>
+          <input type="text" name="" id="" onChange={handleLocation} /> */}
         </div>
         <div>
           <Label>Detailed address</Label>
@@ -189,6 +265,11 @@ const PageAddListing2: FC<PageAddListing2Props> = () => {
                 >
                   <LocationMarker lat={55.9607277} lng={36.2172614} />
                 </GoogleMapReact>
+                {isLoaded ? (
+                  <div className=" h-96" ref={mapRef}></div>
+                ) : (
+                  <p> Loading...</p>
+                )}
               </div>
             </div>
           </div>

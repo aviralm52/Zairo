@@ -69,22 +69,44 @@ const PageAddListing9: FC<PageAddListing9Props> = () => {
     localStorage.setItem("page9", JSON.stringify(newPage9));
   }, [night, time, datesPerPortion]);
 
+  // const handleDateChange = (date: Date | null, portionIndex: number) => {
+  //   if (!date) {
+  //     return;
+  //   }
+  //   const newTime = date.getTime();
+  //   setDatesPerPortion((prevDates) => {
+  //     const updatedDates = [...prevDates];
+  //     const index = updatedDates[portionIndex]?.indexOf(newTime);
+  //     if (index !== -1) {
+  //       updatedDates[portionIndex]?.splice(index, 1); // Remove the date if already selected
+  //     } else {
+  //       updatedDates[portionIndex].push(newTime); // Add the date if not selected
+  //     }
+  //     return updatedDates;
+  //   });
+  // };
+
+
   const handleDateChange = (date: Date | null, portionIndex: number) => {
+    console.log('clicked');
     if (!date) {
       return;
     }
     const newTime = date.getTime();
     setDatesPerPortion((prevDates) => {
       const updatedDates = [...prevDates];
-      const index = updatedDates[portionIndex]?.indexOf(newTime);
+      const portionDates = updatedDates[portionIndex] || [];
+      const index = portionDates.indexOf(newTime);
       if (index !== -1) {
-        updatedDates[portionIndex]?.splice(index, 1); // Remove the date if already selected
+        portionDates.splice(index, 1); // Remove the date if already selected
       } else {
-        updatedDates[portionIndex].push(newTime); // Add the date if not selected
+        portionDates.push(newTime); // Add the date if not selected
       }
+      updatedDates[portionIndex] = portionDates;
       return updatedDates;
     });
   };
+
 
   const getAllSelectedDates = () => {
     return datesPerPortion.flat();

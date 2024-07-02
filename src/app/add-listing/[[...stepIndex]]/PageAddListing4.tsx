@@ -97,7 +97,6 @@ const PageAddListing4: FC<PageAddListing4Props> = () => {
   };
 
   useEffect(() => {
-    console.log("amenities: ", amenities);
     localStorage.setItem("page4", JSON.stringify(amenities));
   }, [amenities]);
 

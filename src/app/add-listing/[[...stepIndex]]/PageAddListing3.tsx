@@ -16,6 +16,7 @@ interface Page3State {
   beds: number[];
   bathroom: number[];
   kitchen: number[];
+  age: number[];
 }
 
 const PageAddListing3: FC<PageAddListing3Props> = () => {
@@ -101,6 +102,15 @@ const PageAddListing3: FC<PageAddListing3Props> = () => {
     return value || emptyNumberArrayGenerator(portions);
   });
 
+  const [childrenAge, setChildrenAge] = useState<number[]>(() => {
+    const savedPage = localStorage.getItem("page3") || "";
+    if (!savedPage) {
+      return emptyNumberArrayGenerator(portions);
+    }
+    const value = JSON.parse(savedPage)["age"];
+    return value || emptyNumberArrayGenerator(portions);
+  });
+
   const [page3, setPage3] = useState<Page3State>({
     portionName: portionName,
     portionSize: portionSize,
@@ -109,6 +119,7 @@ const PageAddListing3: FC<PageAddListing3Props> = () => {
     beds: beds,
     bathroom: bathroom,
     kitchen: kitchen,
+    age: childrenAge,
   });
 
   useEffect(() => {
@@ -125,20 +136,24 @@ const PageAddListing3: FC<PageAddListing3Props> = () => {
       beds: beds,
       bathroom: bathroom,
       kitchen: kitchen,
+      age: childrenAge,
     };
     setPage3(newPage3);
     localStorage.setItem("page3", JSON.stringify(newPage3));
-  }, [portionName, portionSize, guests, bedrooms, beds, bathroom, kitchen]);
+  }, [portionName, portionSize, guests, bedrooms, beds, bathroom, kitchen, childrenAge]);
 
   return (
-    <div className=" flex justify-center items-center gap-16 w-[1100px] -ml-52 flex-wrap">
+    <div className=" flex justify-center items-center gap-8 w-[1100px] -ml-52 flex-wrap ">
       {myArray.map((item, index) => (
         <div
           key={index}
-          className=" flex flex-col border border-white p-1 rounded-3xl shadow-lg p-2 pb-4"
+          className=" flex flex-col border border-white rounded-3xl shadow-lg pb-4 w-1/4" 
         >
-          <h2 className="text-md font-semibold ml-2 mt-2">Name of {myArray.length > 1 ? `Portion ${index + 1}` : `Property`} </h2>
+          <h2 className="text-md font-semibold mt-2 ml-2">
+            Name of {myArray.length > 1 ? `Portion ${index + 1}` : `Property`}{" "}
+          </h2>
           <input
+            required
             type="text"
             className=" bg-transparent w-5/6 mx-auto my-2 rounded-2xl text-sm"
             value={portionName[index]}
@@ -155,6 +170,7 @@ const PageAddListing3: FC<PageAddListing3Props> = () => {
               Size(m<sup>2</sup>)
             </h2>
             <input
+              required
               type="text"
               className="bg-transparent rounded-2xl w-2/5 text-center"
               value={portionSize[index]}
@@ -225,6 +241,24 @@ const PageAddListing3: FC<PageAddListing3Props> = () => {
                 })
               }
             />
+            <div className="flex items-center justify-between ">
+              <h2 className="text-md font-semibold ">
+                Children's Age
+              </h2>
+              <input
+                required
+                type="text"
+                className="bg-transparent rounded-2xl w-2/5 text-center"
+                value={childrenAge[index]}
+                onChange={(e) =>
+                  setChildrenAge((prev) => {
+                    const newArray = [...prev];
+                    newArray[index] = parseInt(e.target.value) || 0;
+                    return newArray;
+                  })
+                }
+              />
+            </div>
           </div>
         </div>
       ))}
