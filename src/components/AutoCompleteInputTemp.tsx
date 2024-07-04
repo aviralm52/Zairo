@@ -3,11 +3,7 @@ import axios from "axios";
 
 const NominatimURL = "https://nominatim.openstreetmap.org/search";
 
-interface AutocompleteInputProps {
-  onAddressSelect: (address: any) => void;
-}
-
-const AutocompleteInput: React.FC<AutocompleteInputProps> = ({ onAddressSelect }) => {
+const AutocompleteInput: React.FC = () => {
   const [query, setQuery] = useState("");
   const [suggestions, setSuggestions] = useState<any[]>([]);
 
@@ -37,17 +33,6 @@ const AutocompleteInput: React.FC<AutocompleteInputProps> = ({ onAddressSelect }
   const handleSuggestionClick = (suggestion: any) => {
     setQuery(suggestion.display_name);
     setSuggestions([]);
-
-    const { address } = suggestion;
-    onAddressSelect({
-      country: address.country || "",
-      state: address.state || "",
-      city: address.city || address.town || address.village || "",
-      street: address.road || "",
-      postalCode: address.postcode || "",
-      lat: suggestion.lat,
-      lng: suggestion.lon,
-    });
   };
 
   return (
@@ -57,7 +42,7 @@ const AutocompleteInput: React.FC<AutocompleteInputProps> = ({ onAddressSelect }
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         placeholder="Search for a place"
-        className="p-2 border border-gray-600 rounded-2xl text-white bg-transparent w-full"
+        className="p-2 border border-gray-600 w-full rounded-2xl bg-transparent text-white"
       />
       {suggestions.length > 0 && (
         <ul className="border border-gray-300 rounded mt-1 max-h-40 overflow-y-auto">

@@ -132,8 +132,7 @@ const PageAddListing2: FC<PageAddListing2Props> = () => {
     useState<google.maps.places.Autocomplete | null>(null);
   const { isLoaded } = useJsApiLoader({
     // googleMapsApiKey: process.env.NEXT_PUBLIC_MAPS_API_KEY || "",
-    // googleMapsApiKey: "AIzaSyAaskQPUlQLG290XRBIGYmp9OGEbPCEdSQ",
-    googleMapsApiKey: "AIzaSyATr11LECo9hnbdn7gYGYu-ew6mnWvLczw",
+    googleMapsApiKey: "AIzaSyAaskQPUlQLG290XRBIGYmp9OGEbPCEdSQ",
     libraries: libs,
   });
   const mapRef = useRef<HTMLDivElement>(null);
@@ -145,20 +144,20 @@ const PageAddListing2: FC<PageAddListing2Props> = () => {
           lat: center.lat,
           lng: center.lng,
           // lat: '10.531020008464978',
-          // lng: '9.298553466796875'
+          // long: '9.298553466796875'
         },
         zoom: 17,
         mapId: "MY-MAP-1234",
       };
 
-      //! setup the map
+      //setup the map
       const gMap = new google.maps.Map(
         mapRef.current as HTMLDivElement,
         mapOptions
       );
       setMap(gMap);
 
-      //! setup the autocomplete
+      //setup the autocomplete
       const gAutoComplete = new google.maps.places.Autocomplete(
         placeAutoCompleteRef.current as HTMLInputElement
       );
@@ -168,17 +167,12 @@ const PageAddListing2: FC<PageAddListing2Props> = () => {
 
   return (
     <>
-      <Input ref={placeAutoCompleteRef} />
+      {/* <Input ref={placeAutoCompleteRef} />
+      <h2>this </h2> */}
       {/* <h1>Place Autocomplete</h1> */}
-      {/* <AutocompleteInput /> */}
-      {/* <PlacesAutocomplete /> */}
-      
-
-
-
-
 
       <h2 className="text-2xl font-semibold">Your place location</h2>
+      <AutocompleteInput />
       <div className="w-14 border-b border-neutral-200 dark:border-neutral-700"></div>
       {/* FORM */}
       <div className="space-y-8">

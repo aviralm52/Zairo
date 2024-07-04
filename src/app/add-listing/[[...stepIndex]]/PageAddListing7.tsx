@@ -149,9 +149,12 @@ const PageAddListing7: FC<PageAddListing7Props> = () => {
   const cloud_name = "dkfwmyr2k";
 
   const uploadFile = async (event: any, index: number) => {
-    // console.log("index: ", index);
     const file = event?.target.files[0];
-    // console.log("files: ", event?.target.files);
+
+    if (!file || !(file.type === 'image/jpeg' || file.type === 'image/png')) {
+      alert('Error: Only PNG and JPEG files are allowed.');
+      return;
+    }
 
     const folderPath = "/Cover_Image";
     const formData = new FormData();
@@ -183,6 +186,11 @@ const PageAddListing7: FC<PageAddListing7Props> = () => {
   const uploadPropertyCoverFile = async (event: any) => {
     const file = event?.target.files[0];
 
+    if (!file || !(file.type === 'image/jpeg' || file.type === 'image/png')) {
+      alert('Error: Only PNG and JPEG files are allowed.');
+      return;
+    }
+
     const folderPath = "/Cover_Image";
     const formData = new FormData();
     formData.append("file", file);
@@ -199,6 +207,14 @@ const PageAddListing7: FC<PageAddListing7Props> = () => {
 
   const uploadPortionPictures = async (event: any, index: number) => {
     const files = event?.target.files;
+
+    for (let i = 0; i < files.length; i++) {
+      if (!(files[i].type === 'image/png' || files[i].type === 'image/jpeg')) {
+        alert('Error: Only PNG and JPEG files are allowed.');
+        return;
+      }
+    }
+
     const folderPath = "/Cover_Image";
     const formData = new FormData();
 
@@ -226,6 +242,14 @@ const PageAddListing7: FC<PageAddListing7Props> = () => {
 
   const uploadPropertyPictures = async (event: any) => {
     const files = event?.target.files;
+
+    for (let i = 0; i < files.length; i++) {
+      if (!(files[i].type === 'image/png' || files[i].type === 'image/jpeg')) {
+        alert('Error: Only PNG and JPEG files are allowed.');
+        return;
+      }
+    }
+
     const folderPath = "/Cover_Image";
     const formData = new FormData();
 
