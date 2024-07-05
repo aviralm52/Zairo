@@ -89,7 +89,6 @@ const PageAddListing2: FC<PageAddListing2Props> = () => {
   const [isLoaded, setIsLoaded] = useState(false);
 
   const handleAddressUpdate = (address: any) => {
-    console.log("Address updated:", address);
     setAddress(address || "");
     setCountry(address.country || "");
     setState(address.state || "");
@@ -100,7 +99,6 @@ const PageAddListing2: FC<PageAddListing2Props> = () => {
       setCenter({ lat: address.lat, lng: address.lng });
     }
     getPostalCodeFromLatLng(address.lat, address.lng);
-    console.log(country, state, city, center);
   };
 
   // const [country, setCountry] = useState<string>(() => {
@@ -156,7 +154,6 @@ const PageAddListing2: FC<PageAddListing2Props> = () => {
   //   const value = JSON.parse(savedPage)["postalCode"];
   //   return value || "";
   // });
-
 
 
   const getPostalCodeFromLatLng = async (lat:number, lng:number) => {
@@ -309,10 +306,6 @@ const PageAddListing2: FC<PageAddListing2Props> = () => {
               onChange={(e) => setPostalCode(e.target.value)}
             />
           </FormItem>
-          {/* <div>
-            <h2>{center.lat}</h2>
-            <h2>{center.lng}</h2>
-          </div> */}
           <div>
             <h1>Coordinates</h1>
             <div className="flex gap-32 w-full mt-2">

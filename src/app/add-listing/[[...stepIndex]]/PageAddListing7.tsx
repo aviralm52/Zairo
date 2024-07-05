@@ -20,12 +20,7 @@ const PageAddListing7: FC<PageAddListing7Props> = () => {
   }
   let checkPortion = portions > 1 ? portions : 0
 
-  // const [myArray, setMyArray] = useState<number[]>(Array(portions).fill(1));
   const [myArray, setMyArray] = useState<number[]> (Array(checkPortion).fill(1));
-  // if (portions > 1) {
-  //   setMyArray(Array(portions).fill(1));
-  // }
-
 
   const booleanArray = Array.from(
     { length: portions },
@@ -57,11 +52,6 @@ const PageAddListing7: FC<PageAddListing7Props> = () => {
     () => {
       const savedUrls = localStorage.getItem("portionPictureUrls");
       const arrayOf5 = Array(5).fill("")
-      // return savedUrls
-      //   ? JSON.parse(savedUrls)
-      //   : Array.from({ length: portions }, () =>
-      //       Array(5).fill("*")
-      //     );
       return savedUrls
       ? JSON.parse(savedUrls)
       : Array(portions).fill(arrayOf5);
@@ -94,11 +84,6 @@ const PageAddListing7: FC<PageAddListing7Props> = () => {
   });
 
   //TODO: initialising portionCoverFileUrls of partitionSizeLength & each partion has 5 images
-  // const emptyArrayOf5 = emptyStringArrayGenerator(5);
-  // const newArray = Array.from(
-  //     { length: PartitionValueinPage7 },
-  //     () => emptyArrayOf5
-  // );
 
   useEffect(() => {
     localStorage.setItem("propertyCoverFileUrl", propertyCoverFileUrl);
@@ -163,12 +148,13 @@ const PageAddListing7: FC<PageAddListing7Props> = () => {
     formData.append("folder", folderPath);
     const folder = "Zairo";
 
+
+
     const response = await axios.post(
       `https://api.cloudinary.com/v1_1/${cloud_name}/image/upload`,
       formData
     );
     const customUrl = response.data.secure_url + `/index=${index}`;
-    console.log("response: ", response?.data.secure_url);
     setPortionCoverFileUrls((prevState) => {
       const newUrls = [...prevState];
       newUrls[index] = response?.data.secure_url;
@@ -182,6 +168,8 @@ const PageAddListing7: FC<PageAddListing7Props> = () => {
       return newImages;
     });
   };
+
+  
 
   const uploadPropertyCoverFile = async (event: any) => {
     const file = event?.target.files[0];

@@ -90,7 +90,6 @@ const PageAddListing4: FC<PageAddListing4Props> = () => {
   const handleCheckboxChange = (name: string, checked: boolean, index:number) => {
     setAmenities((prevAmenities) =>{
       const newAmenities = [...prevAmenities];
-      console.log("new: ",newAmenities)
       newAmenities[index][name] = checked;
       return newAmenities;  
     })
