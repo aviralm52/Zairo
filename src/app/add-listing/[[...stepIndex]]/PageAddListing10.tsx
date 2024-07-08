@@ -9,37 +9,10 @@ import { Route } from "@/routers/types";
 import { FaLocationDot } from "react-icons/fa6";
 import Link from "next/link";
 import axios from "axios";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { toast, ToastContainer } from "react-toastify";
+import { useUser } from "@clerk/clerk-react";
 
 export interface PageAddListing10Props {}
-
-interface ListingData {
-  id: string;
-  authorId: number;
-  date: string;
-  href: string;
-  listingCategoryId: number;
-  title: string;
-  featuredImage: string;
-  galleryImgs: string[];
-  commentCount: number;
-  viewCount: number;
-  like: boolean;
-  address: string;
-  reviewStart: number;
-  reviewCount: number;
-  price: string;
-  maxGuests: number;
-  bedrooms: number;
-  bathrooms: number;
-  saleOff: string | null;
-  isAds: string | null;
-  map: {
-    lat: number;
-    lng: number;
-  };
-}
 
 interface Page3State {
   portionName: string[];
@@ -60,27 +33,21 @@ interface Page2State {
   postalCode: string;
 }
 
-interface publishPageState {
-  id: string;
-  saleOff: string;
-  isAds: string;
-  author: string;
-  listingCategory: string;
-  href: string;
-}
-
 interface CombinedData {
+  userId?: string;
+
   propertyType?: string;
   placeName?: string;
   rentalForm?: string;
   numberOfPortions?: number;
+
+  street?: string;
+  postalCode?: string;
   city?: string;
   state?: string;
-  postalCode?: string;
   country?: string;
-  street?: string;
   center?: object;
-  roomNumber?: number;
+
   portionName?: string[];
   portionSize?: number[];
   guests?: number[];
@@ -89,40 +56,61 @@ interface CombinedData {
   bathroom?: number[];
   kitchen?: number[];
   childrenAge?: number[];
+
   basePrice?: number[];
   weekendPrice?: number[];
   monthlyDiscount?: number[];
   currency?: string;
-  propertyCoverFileUrl?: string;
-  propertyPictureUrls?: string[];
-  portionCoverFileUrls?: string[];
-  portionPictureUrls?: string[];
+
   generalAmenities?: object;
   otherAmenities?: object;
   safeAmenities?: object;
-  additionalRules?: string[];
-  reviews?: string[];
+
   smoking?: string;
   pet?: string;
   party?: string;
   cooking?: string;
-  propertyPictureUrl?: string;
-  portionCoverFileUrl?: string;
-  portionPictureUrl?: string;
-  // isLive: boolean;
+  additionalRules?: string[];
+
+  reviews?: string[];
+
+  propertyCoverFileUrl?: string;
+  propertyPictureUrls?: string[];
+  portionCoverFileUrls?: string[];
+  portionPictureUrls?: string[][];
+
+  night: number[];
+  time: number[];
+  datesPerPortion: number[][];
+
+  isLive?: boolean;
+}
+
+interface checkBoxState {
+  [key: string]: any;
 }
 
 const PageAddListing10: FC<PageAddListing10Props> = () => {
+  const { user } = useUser();
 
-  const [listingPage, setListingPage] = useState<ListingData>(() => {
-    const savedPage = localStorage.getItem("listingData");
-    return savedPage
-      ? JSON.parse(savedPage)
-      : {
-          ...DEMO_STAY_LISTINGS[0],
-          reviewStart: 0,
-        };
-  });
+  const clearLocalStorage = () => {
+    localStorage.removeItem("page1");
+    localStorage.removeItem("page2");
+    localStorage.removeItem("page3");
+    localStorage.removeItem("page4");
+    localStorage.removeItem("page5");
+    localStorage.removeItem("page6");
+    localStorage.removeItem("page8");
+    localStorage.removeItem("page9");
+    localStorage.removeItem("propertyCoverFileUrl");
+    localStorage.removeItem("propertyPictureUrls");
+    localStorage.removeItem("portionCoverFileUrls");
+    localStorage.removeItem("portionPictureUrls");
+    localStorage.removeItem("AmenitiesToRetrieve");
+    localStorage.removeItem("isImages");
+    localStorage.removeItem("isPortionPictures");
+    localStorage.removeItem("isPropertyPictures");
+  };
 
   const [propertyCoverFileUrl, setPropertyCoverFileUrl] = useState<string>(
     () => {
@@ -156,20 +144,23 @@ const PageAddListing10: FC<PageAddListing10Props> = () => {
     return parseInt(value.basePrice[0]) || 0;
   });
 
-  const [combinedData, setCombinedData] = useState<CombinedData>(() => ({}));
+  const [combinedData, setCombinedData] = useState<CombinedData>();
 
   useEffect(() => {
     const fetchDataFromLocalStorage = () => {
       const page1 = JSON.parse(localStorage.getItem("page1") || "{}");
       const page2 = JSON.parse(localStorage.getItem("page2") || "{}");
       const page3 = JSON.parse(localStorage.getItem("page3") || "{}");
-      const page4 = JSON.parse(localStorage.getItem("page4") || "{}");
+      const page4 = JSON.parse(localStorage.getItem("page4") || "[{}, {}, {}]");
       const page5 = JSON.parse(localStorage.getItem("page5") || "{}");
       const page6 = JSON.parse(localStorage.getItem("page6") || "{}");
       // const page7 = JSON.parse(localStorage.getItem('page7') || '{}');
       const page8 = JSON.parse(localStorage.getItem("page8") || "{}");
       const page9 = JSON.parse(localStorage.getItem("page9") || "{}");
-      // const propertyCoverFileUrl = JSON.parse(localStorage.getItem('propertyCoverFileUrl') || "");
+      const AmenitiesToRetrieve = JSON.parse(
+        localStorage.getItem("AmenitiesToRetrieve") || "{}"
+      );
+
       const propertyPictureUrls = JSON.parse(
         localStorage.getItem("propertyPictureUrls") || "[]"
       );
@@ -180,6 +171,7 @@ const PageAddListing10: FC<PageAddListing10Props> = () => {
         localStorage.getItem("portionPictureUrls") || "[[]]"
       );
 
+      console.log("page4: ", page4);
       // Combine all the data from the pages
       const combinedData = {
         ...page1,
@@ -194,33 +186,39 @@ const PageAddListing10: FC<PageAddListing10Props> = () => {
         propertyPictureUrls,
         portionCoverFileUrls,
         portionPictureUrls,
-        generalAmenities: page4[0],
-        otherAmenities: page4[1],
-        safeAmenities: page4[2],
+        generalAmenities: {
+          ...AmenitiesToRetrieve["generalAmenities"],
+        },
+        otherAmenities: { ...AmenitiesToRetrieve["otherAmenities"] },
+        safeAmenities: { ...AmenitiesToRetrieve["safeAmenities"] },
+        userId: user?.id,
       };
       setCombinedData(combinedData);
-      console.log("combined data:",combinedData);
       return combinedData;
     };
 
-    fetchDataFromLocalStorage();
-  }, []);
+    const data = fetchDataFromLocalStorage();
+    console.log("fetched data: ", data);
+  }, [user]);
 
   const handleGoLive = async () => {
-    console.log('clicked go live')
+    // console.log('clicked go live', combinedData);
+    console.log("user id before request: ", user?.id);
     const data = {
+      userId: user?.id,
+
       propertyType: combinedData?.propertyType,
       placeName: combinedData?.placeName,
       rentalForm: combinedData?.rentalForm,
       numberOfPortions: combinedData?.numberOfPortions,
+
+      street: combinedData?.street,
+      postalCode: combinedData?.postalCode,
       city: combinedData?.city,
       state: combinedData?.state,
-      postalCode: combinedData?.postalCode,
       country: combinedData?.country,
-      street: combinedData?.street,
       center: combinedData?.center,
 
-      roomNumber: combinedData?.roomNumber,
       portionName: combinedData?.portionName,
       portionSize: combinedData?.portionSize,
       guests: combinedData?.guests,
@@ -229,39 +227,51 @@ const PageAddListing10: FC<PageAddListing10Props> = () => {
       bathroom: combinedData?.bathroom,
       kitchen: combinedData?.kitchen,
       childrenAge: combinedData?.childrenAge,
+
       basePrice: combinedData?.basePrice,
       weekendPrice: combinedData?.weekendPrice,
       monthlyDiscount: combinedData?.monthlyDiscount,
-
       currency: combinedData?.currency,
 
-      generalAmenities: combinedData?.generalAmenities,
-      otherAmenities: combinedData?.otherAmenities,
-      safeAmenities: combinedData?.safeAmenities,
+      generalAmenities: { ...combinedData?.generalAmenities },
+      otherAmenities: { ...combinedData?.otherAmenities },
+      safeAmenities: { ...combinedData?.safeAmenities },
 
       smoking: combinedData?.smoking,
       pet: combinedData?.pet,
       party: combinedData?.party,
       cooking: combinedData?.cooking,
-
       additionalRules: combinedData?.additionalRules,
+
       reviews: combinedData?.reviews,
 
       propertyCoverFileUrl: combinedData?.propertyCoverFileUrl,
       propertyPictureUrls: combinedData?.propertyPictureUrls,
       portionCoverFileUrls: combinedData?.portionCoverFileUrls,
       portionPictureUrls: combinedData?.portionPictureUrls,
+
+      night: combinedData?.night,
+      time: combinedData?.time,
+      datesPerPortion: combinedData?.datesPerPortion,
+
       isLive: true,
     };
 
+    console.log("data: ", data);
+
     try {
+      console.log("data in try: ", data);
       const response = await axios.post("/api/users", data);
-      toast.success('Property is successfully live!');
-      console.log('response: ', response);
+      console.log("id: ", data?.userId, typeof data?.userId);
+      if (data?.userId) {
+        toast.success("Property is successfully live!");
+      } else {
+        toast.error("User must be logged in to go live");
+      }
+      console.log("response: ", response);
     } catch (error) {
-      // console.error("Failed to save data:", error);
-      console.log('error')
-      toast.error('Incorrect data');
+      console.log("error");
+      toast.error("User must be logged in to go live");
       throw error;
     }
   };
@@ -334,19 +344,19 @@ const PageAddListing10: FC<PageAddListing10Props> = () => {
           </Link>
 
           {/* <Link href={"/listing-stay-detail"}> */}
-            <ButtonSecondary className="-p-4" onClick={handleGoLive}>
-              <img
-                src="https://img.icons8.com/?size=100&id=fJXFbcW0WrW9&format=png&color=000000"
-                alt=""
-                className="bg-green-400 w-4 h-4 -ml-4 ronded-xl"
-              />
-              <span className="ml-3 text-sm -p-2 -mr-4">Go Live</span>
-            </ButtonSecondary>
+          <ButtonSecondary className="-p-4" onClick={handleGoLive}>
+            <img
+              src="https://img.icons8.com/?size=100&id=fJXFbcW0WrW9&format=png&color=000000"
+              alt=""
+              className="bg-green-400 w-4 h-4 -ml-4 ronded-xl"
+            />
+            <span className="ml-3 text-sm -p-2 -mr-4">Go Live</span>
+          </ButtonSecondary>
           {/* </Link> */}
         </div>
       </div>
-      {/*  */}
       <ToastContainer />
+      {/*  */}
     </>
   );
 };

@@ -243,7 +243,7 @@ const PageAddListing3: FC<PageAddListing3Props> = () => {
             />
             <div className="flex items-center justify-between ">
               <h2 className="text-md font-semibold ">
-                Children's Age
+                Children Age
               </h2>
               <input
                 required

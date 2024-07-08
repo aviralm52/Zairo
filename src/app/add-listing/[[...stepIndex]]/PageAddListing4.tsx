@@ -9,7 +9,6 @@ interface checkBoxState {
 }
 
 const PageAddListing4: FC<PageAddListing4Props> = () => {
-
   const [savedAmenitites, setSavedAmenities] = useState<checkBoxState[]>(() => {
     const savedPage = localStorage.getItem("page4") || "";
     if (!savedPage) {
@@ -39,28 +38,28 @@ const PageAddListing4: FC<PageAddListing4Props> = () => {
   };
 
   const otherAmenities: checkBoxState = {
-    Wardrobe: savedAmenitites[1].Wardrobe,
-    "Cloth hook": savedAmenitites[1]["Cloth hook"],
-    "Extra cushion": savedAmenitites[1]["Extra cushion"],
-    "Gas stove": savedAmenitites[1]["Gas stove"],
-    "Toilet paper": savedAmenitites[1]["Toilet paper"],
-    "Free toiletries": savedAmenitites[1]["Free toiletries"],
-    "Makeup table": savedAmenitites[1]["Makeup table"],
-    "Hot pot": savedAmenitites[1]["Hot pot"],
-    "Bathroom heaters": savedAmenitites[1]["Bathroom heaters"],
-    Kettle: savedAmenitites[1].Kettle,
-    Dishwasher: savedAmenitites[1].Dishwasher,
-    "BBQ grill": savedAmenitites[1]["BBQ grill"],
-    Toaster: savedAmenitites[1].Toaster,
-    Towel: savedAmenitites[1].Towel,
-    "Dining table": savedAmenitites[1]["Dining table"],
+    Wardrobe: savedAmenitites[1].Wardrobe || false,
+    "Cloth hook": savedAmenitites[1]["Cloth hook"] || false,
+    "Extra cushion": savedAmenitites[1]["Extra cushion"] || true,
+    "Gas stove": savedAmenitites[1]["Gas stove"] || false,
+    "Toilet paper": savedAmenitites[1]["Toilet paper"] || true,
+    "Free toiletries": savedAmenitites[1]["Free toiletries"] || true,
+    "Makeup table": savedAmenitites[1]["Makeup table"] || false,
+    "Hot pot": savedAmenitites[1]["Hot pot"] || false,
+    "Bathroom heaters": savedAmenitites[1]["Bathroom heaters"] || true,
+    Kettle: savedAmenitites[1].Kettle || false,
+    Dishwasher: savedAmenitites[1].Dishwasher || false,
+    "BBQ grill": savedAmenitites[1]["BBQ grill"] || false,
+    Toaster: savedAmenitites[1].Toaster || false,
+    Towel: savedAmenitites[1].Towel || true,
+    "Dining table": savedAmenitites[1]["Dining table"] || true,
   };
 
   const safeAmenities: checkBoxState = {
-    "Fire Siren": savedAmenitites[2]["Fire Siren"],
-    "Fire extinguisher": savedAmenitites[2]["Fire extinguisher"],
-    "Antitheft Key": savedAmenitites[2]["Antitheft Key"],
-    "Safe Vault": savedAmenitites[2]["Safe Vault"],
+    "Fire Siren": savedAmenitites[2]["Fire Siren"] || true,
+    "Fire extinguisher": savedAmenitites[2]["Fire extinguisher"] || true,
+    "Antitheft Key": savedAmenitites[2]["Antitheft Key"] || true,
+    "Safe Vault": savedAmenitites[2]["Safe Vault"] || true,
   };
 
   const [amenities, setAmenities] = useState<checkBoxState[]>([
@@ -87,18 +86,30 @@ const PageAddListing4: FC<PageAddListing4Props> = () => {
   //   );
   // };
 
-  const handleCheckboxChange = (name: string, checked: boolean, index:number) => {
-    setAmenities((prevAmenities) =>{
+  const handleCheckboxChange = (
+    name: string,
+    checked: boolean,
+    index: number
+  ) => {
+    setAmenities((prevAmenities) => {
       const newAmenities = [...prevAmenities];
       newAmenities[index][name] = checked;
-      return newAmenities;  
-    })
+      return newAmenities;
+    });
   };
 
   useEffect(() => {
+    const AmenitiesToRetrieve = {
+      generalAmenities,
+      otherAmenities,
+      safeAmenities,
+    };
     localStorage.setItem("page4", JSON.stringify(amenities));
+    localStorage.setItem(
+      "AmenitiesToRetrieve",
+      JSON.stringify(AmenitiesToRetrieve)
+    );
   }, [amenities]);
-
 
   return (
     <>
@@ -142,7 +153,9 @@ const PageAddListing4: FC<PageAddListing4Props> = () => {
                 label={key}
                 name={key}
                 onChange={(checked) => handleCheckboxChange(key, checked, 0)}
-                {...(amenities[0][key] && { defaultChecked: true })}
+                {...(amenities[0][key] && {
+                  defaultChecked: true,
+                })}
               />
             ))}
           </div>
@@ -200,7 +213,9 @@ const PageAddListing4: FC<PageAddListing4Props> = () => {
                 label={key}
                 name={key}
                 onChange={(checked) => handleCheckboxChange(key, checked, 1)}
-                {...(amenities[1][key] && { defaultChecked: true })}
+                {...(amenities[1][key] && {
+                  defaultChecked: true,
+                })}
               />
             ))}
           </div>
@@ -234,7 +249,9 @@ const PageAddListing4: FC<PageAddListing4Props> = () => {
                 label={key}
                 name={key}
                 onChange={(checked) => handleCheckboxChange(key, checked, 2)}
-                {...(amenities[2][key] && { defaultChecked: true })}
+                {...(amenities[2][key] && {
+                  defaultChecked: true,
+                })}
               />
             ))}
           </div>

@@ -99,7 +99,7 @@ const GuestsInput: FC<GuestsInputProps> = ({
       guestChildren: guestChildrenInputValue,
       guestInfants: guestInfantsInputValue,
     });
-  }, []);
+  });
 
   const guests = localStorage.getItem("totalGuests") || "";
   const totalGuests = guests ? JSON.parse(guests) : 0;

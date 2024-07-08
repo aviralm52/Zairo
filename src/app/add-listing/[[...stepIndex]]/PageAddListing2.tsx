@@ -321,10 +321,10 @@ const PageAddListing2: FC<PageAddListing2Props> = () => {
           </div>
         </div>
         <div>
-          <Label>Detailed address</Label>
+          {/* <Label>Detailed address</Label>
           <span className="block mt-1 text-sm text-neutral-500 dark:text-neutral-400">
             1110 Pennsylvania Avenue NW, Washington, DC 20230
-          </span>
+          </span> */}
           <div className="mt-4">
             <div className="aspect-w-5 aspect-h-5 sm:aspect-h-3">
               <div className="rounded-xl overflow-hidden">

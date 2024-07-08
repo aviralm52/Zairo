@@ -5,6 +5,7 @@ import ImageUpload from "./uploadImage";
 import axios from "axios";
 import { MdCancel } from "react-icons/md";
 import { Value } from "sass";
+import Image from "next/image";
 
 export interface PageAddListing7Props {}
 
@@ -370,6 +371,7 @@ const PageAddListing7: FC<PageAddListing7Props> = () => {
                             alt="No Image"
                             className="w-28 h-28 object-contain rounded-lg  border border-gray-500"
                           />
+                          {/* <Image src={propertyPictureUrls[i]} alt="" fill/> */}
                         </div>
                       ))}
                     </div>
@@ -456,13 +458,14 @@ const PageAddListing7: FC<PageAddListing7Props> = () => {
                               return newCoverFileUrls;
                             });
                           }}
-                          // onClick={handleClickOnCross}
+
                         />
                         <div className="flex flex-wrap gap-2">
-                          <img
+                          {/* <img
                             src={portionCoverFileUrls[index]}
                             className="w-408 h-48 object-contain rounded-lg"
-                          />
+                          /> */}
+                          <Image src={portionCoverFileUrls[index]} width={408} height={408} alt=""/>
                         </div>
                       </div>
                     )}

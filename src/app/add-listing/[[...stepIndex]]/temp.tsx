@@ -164,7 +164,7 @@ const PageAddListing2: FC<PageAddListing2Props> = () => {
       );
       setAutoComplete(gAutoComplete);
     }
-  }, [isLoaded]);
+  }, [isLoaded, center.lat, center.lng]);
 
   return (
     <>

@@ -36,7 +36,6 @@ import { FaHeart } from "react-icons/fa";
 import { MdCancel } from "react-icons/md";
 import "react-responsive-carousel/lib/styles/carousel.min.css"; // requires a loader
 import { Carousel } from "react-responsive-carousel";
-import Modal from "react-modal";
 import { useAuth, useSignIn } from "@clerk/nextjs";
 import { useUser } from "@clerk/nextjs";
 import ProtectedRoute from "@/components/ProtectedRoute";
@@ -80,7 +79,11 @@ const ListingStayDetailPage: FC<ListingStayDetailPageProps> = ({ card }) => {
   const searchParams = useSearchParams();
 
   const param = searchParams.get("id") || 0;
-  const indexId: number = parseInt(param, 10);
+  // const indexId: number = parseInt(param, 10);
+  let indexId: number;
+  if (typeof param === "string") {
+    indexId = parseInt(param, 10);
+  }
 
   let portions = 0;
   const data = localStorage.getItem("page1") || "";
@@ -162,7 +165,7 @@ const ListingStayDetailPage: FC<ListingStayDetailPageProps> = ({ card }) => {
       const value = JSON.parse(savedData);
       setPortionCoverFileUrls(value);
     }
-  }, []);
+  });
 
   let [isOpenModalAmenities, setIsOpenModalAmenities] = useState(false);
 
@@ -820,7 +823,7 @@ const ListingStayDetailPage: FC<ListingStayDetailPageProps> = ({ card }) => {
                 }}
                 key={index}
               >
-                <img
+                {/* <img
                   src={
                     portionCoverFileUrls[index]
                       ? portionCoverFileUrls[index]
@@ -828,7 +831,8 @@ const ListingStayDetailPage: FC<ListingStayDetailPageProps> = ({ card }) => {
                   }
                   alt=""
                   className="fill w-56 h-48"
-                />
+                /> */}
+                <Image src={portionCoverFileUrls[index]} alt="" fill />
               </Link>
             </div>
             <div className="flex gap-4 justify-center">
@@ -923,7 +927,8 @@ const ListingStayDetailPage: FC<ListingStayDetailPageProps> = ({ card }) => {
           .filter((_, i) => i >= 1)
           .map((item, index) => (
             <div key={index}>
-              <img src={item} alt="" className="w-16 h-80 rounded-xl" />
+              {/* <img src={item} alt="" className="w-16 h-80 rounded-xl" /> */}
+              <Image src={item} alt="" fill />
             </div>
           ))}
       </Carousel>
@@ -1001,10 +1006,16 @@ const ListingStayDetailPage: FC<ListingStayDetailPageProps> = ({ card }) => {
                         >
                           <div className="rounded-xl border border-slate-700">
                             <a href={item} target="_blank">
-                              <img
+                              {/* <img
                                 src={item}
                                 alt=""
                                 className="w-64 h-64 rounded-xl lg:w-72 lg:h-72"
+                              /> */}
+                              <Image
+                                src={item}
+                                alt=""
+                                fill
+                                className="rounded-xl"
                               />
                             </a>
                           </div>
@@ -1030,20 +1041,29 @@ const ListingStayDetailPage: FC<ListingStayDetailPageProps> = ({ card }) => {
         <header className="rounded-md sm:rounded-xl h-[60%]">
           <div className="relative grid grid-cols-3 sm:grid-cols-4 gap-1 sm:gap-2 ">
             <div className="col-span-2 row-span-3 sm:row-span-2 relative rounded-md sm:rounded-xl overflow-hidden border-2 border-white">
-              <img
+              {/* <img
                 src={allImages[0]}
                 alt=""
                 className=" object-cover w-full h-full"
-              />
+              /> */}
+              <Image src={allImages[0]} alt="" className="object-cover" />
             </div>
             {allImages
               .filter((_, i) => i >= 1 && i < 5)
               .map((item, index) => (
-                <div className="aspect-w-4 aspect-h-3 sm:aspect-w-6 sm:aspect-h-5 rounded-xl" key={index}>
-                  <img
+                <div
+                  className="aspect-w-4 aspect-h-3 sm:aspect-w-6 sm:aspect-h-5 rounded-xl"
+                  key={index}
+                >
+                  {/* <img
                     src={allImages[index]}
                     alt=""
                     className="object-cover rounded-xl sm:rounded-xl w-44 h-44 "
+                  /> */}
+                  <Image
+                    src={allImages[index]}
+                    alt=""
+                    className="object-cover"
                   />
                 </div>
               ))}

@@ -5,6 +5,10 @@ import DatePickerCustomHeaderTwoMonth from "@/components/DatePickerCustomHeaderT
 import NcInputNumber from "@/components/NcInputNumber";
 import React, { FC, useEffect, useState } from "react";
 import DatePicker from "react-datepicker";
+import dynamic from "next/dynamic";
+import { NextPage } from "next";
+// import CustomDayPicker from "@/components/CustomDayPicker";
+import { DayPicker } from "react-day-picker";
 
 export interface PageAddListing9Props {}
 
@@ -13,6 +17,10 @@ interface Page9State {
   time: number[];
   datesPerPortion: number[][];
 }
+
+const CustomDayPicker = dynamic(() => import("@/components/CustomDayPicker"), {
+  ssr: false,
+});
 
 const PageAddListing9: FC<PageAddListing9Props> = () => {
   let portions = 0;
@@ -69,57 +77,25 @@ const PageAddListing9: FC<PageAddListing9Props> = () => {
     localStorage.setItem("page9", JSON.stringify(newPage9));
   }, [night, time, datesPerPortion]);
 
-  // const handleDateChange = (date: Date | null, portionIndex: number) => {
-  //   if (!date) {
-  //     return;
-  //   }
-  //   const newTime = date.getTime();
-  //   setDatesPerPortion((prevDates) => {
-  //     const updatedDates = [...prevDates];
-  //     const index = updatedDates[portionIndex]?.indexOf(newTime);
-  //     if (index !== -1) {
-  //       updatedDates[portionIndex]?.splice(index, 1); // Remove the date if already selected
-  //     } else {
-  //       updatedDates[portionIndex].push(newTime); // Add the date if not selected
-  //     }
-  //     return updatedDates;
-  //   });
-  // };
-
-
-  const handleDateChange = (date: Date | null, portionIndex: number) => {
-    console.log('clicked');
-    if (!date) {
-      return;
-    }
-    const newTime = date.getTime();
+  const handleDateChange = (dates: number[], portionIndex: number) => {
     setDatesPerPortion((prevDates) => {
       const updatedDates = [...prevDates];
-      const portionDates = updatedDates[portionIndex] || [];
-      const index = portionDates.indexOf(newTime);
-      if (index !== -1) {
-        portionDates.splice(index, 1); // Remove the date if already selected
-      } else {
-        portionDates.push(newTime); // Add the date if not selected
-      }
-      updatedDates[portionIndex] = portionDates;
+      updatedDates[portionIndex] = dates;
       return updatedDates;
     });
   };
-
 
   const getAllSelectedDates = () => {
     return datesPerPortion.flat();
   };
 
-  console.log("datesPerPortion: ", datesPerPortion);
   return (
     <>
       <div>
         <h2 className="text-2xl font-semibold">How long can guests stay?</h2>
         <span className="block mt-2 text-neutral-500 dark:text-neutral-400">
           {` Shorter trips can mean more reservations, but you'll turn over your
-          space more often.`}
+            space more often.`}
         </span>
       </div>
       <div className="w-14 border-b border-neutral-200 dark:border-neutral-700"></div>
@@ -172,22 +148,31 @@ const PageAddListing9: FC<PageAddListing9Props> = () => {
         <div className="border border-white rounded-xl p-2" key={index}>
           <span className="text-2xl ml-4 font-medium">Portion {index + 1}</span>
           <div className="addListingDatePickerExclude mt-2" key={index}>
-            <DatePicker
-              onChange={(date) => handleDateChange(date, index)}
-              // selected={startDate}
-              monthsShown={2}
-              showPopperArrow={false}
-              // excludeDates={getAllSelectedDates().map((item) => new Date(item))}
-              excludeDates={datesPerPortion[index]?.map(
-                (item) => new Date(item)
-              )}
-              inline
-              renderCustomHeader={(p) => (
-                <DatePickerCustomHeaderTwoMonth {...p} />
-              )}
-              renderDayContents={(day, date) => (
-                <DatePickerCustomDay dayOfMonth={day} date={date} />
-              )}
+            {/* <DatePicker
+                            onChange={(date) => handleDateChange(date, index)}
+                            // selected={startDate}
+                            monthsShown={2}
+                            showPopperArrow={false}
+                            // excludeDates={getAllSelectedDates().map((item) => new Date(item))}
+                            excludeDates={datesPerPortion[index]?.map(
+                                (item) => new Date(item)
+                            )}
+                            inline
+                            renderCustomHeader={(p) => (
+                                <DatePickerCustomHeaderTwoMonth {...p} />
+                            )}
+                            renderDayContents={(day, date) => (
+                                <DatePickerCustomDay
+                                    dayOfMonth={day}
+                                    date={date}
+                                />
+                            )}
+                        /> */}
+            <CustomDayPicker
+              key={index}
+              index={index}
+              datesPerPortion={datesPerPortion}
+              setDatesPerPortion={setDatesPerPortion}
             />
           </div>
         </div>

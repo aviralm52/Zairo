@@ -92,7 +92,7 @@ const PageAddListing8: FC<PageAddListing8Props> = () => {
     };
     setPage8(newPage);
     localStorage.setItem("page8", JSON.stringify(newPage));
-  }, [isPortion, basePrice, weekendPrice, monthlyDiscount]);
+  }, [isPortion, basePrice, weekendPrice, monthlyDiscount, currency]);
 
   return (
     <div className=" flex flex-col gap-12">
